@@ -331,6 +331,14 @@ export default function InvestmentChart({bump}) {
         title: {
           display: true,
           text: "Arrivals per minute"
+        },
+        ticks: {
+          color: 'white'
+        }
+      },
+      y: {
+        ticks: {
+          color: 'white'
         }
       }
     },
@@ -341,7 +349,15 @@ export default function InvestmentChart({bump}) {
       },
       afterDatasetDraw: () => {
         console.log("called");
-      }
+      },
+      legend: {
+        labels: {
+          color: "white",  
+          font: {
+            size: 18 
+          }
+        }
+      },
     }
   };
 
@@ -381,7 +397,7 @@ export default function InvestmentChart({bump}) {
                         borderWidth: 0.2,
                         barPercentage: 1,
                         categoryPercentage: 1,
-                        backgroundColor: "lightgreen",
+                        backgroundColor: "lightgray",
                         barThickness: "flex"
                       }
                     ]
