@@ -59,6 +59,14 @@ export default function SalaryChart() {
           type: 'linear',
           max: 500000,
           min: 0,
+          ticks: {
+            color: 'white'
+          }
+        },
+        x: {
+          ticks: {
+            color: 'white'
+          }
         }
       },
       onHover: function(e) {
@@ -125,6 +133,14 @@ export default function SalaryChart() {
 
             chartRef.current.update();
           },
+        },
+        legend: {
+          labels: {
+            color: "white",  
+            font: {
+              size: 18 
+            }
+          }
         }
       }
     }

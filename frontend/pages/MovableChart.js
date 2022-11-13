@@ -106,17 +106,31 @@ export default function MovableChart() {
           max: 100,
           min: 0,
           display: false,
+          ticks: {
+            color: 'white'
+          }
         },
         y2: {
           type: 'linear',
           max: 100,
           min: 0,
-          display: false
+          display: false,
+          ticks: {
+            color: 'white'
+          }
         },
         y3: {
           type: 'linear',
           max: 100,
           min: 0,
+          ticks: {
+            color: 'white'
+          }
+        },
+        x: {
+          ticks: {
+            color: 'white'
+          }
         }
       },
       onHover: function(e) {
