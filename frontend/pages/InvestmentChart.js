@@ -140,7 +140,7 @@ export default function InvestmentChart({bump}) {
     });
   }
 
-  useEffect(loadNetWorth, [bump, startYear, backtestStart, simSelected]);
+  useEffect(loadNetWorth, [bump, startYear, simSelected]);
 
   const POINT_PROPS = {
     pointHitRadius: 5,
