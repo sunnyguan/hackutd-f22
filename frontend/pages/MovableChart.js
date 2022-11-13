@@ -1,7 +1,7 @@
-import { Chart as ChartJS } from 'chart.js/auto'
-import { Chart }            from 'react-chartjs-2'
+import { Chart as ChartJS } from 'chart.js/auto';
+import { Chart }            from 'react-chartjs-2';
 import {useEffect, useRef, useState} from "react";
-import 'chartjs-plugin-dragdata'
+import 'chartjs-plugin-dragdata';
 
 export default function MovableChart() {
 
@@ -181,7 +181,24 @@ export default function MovableChart() {
           },
         }
       }
-    }
+    },
+    plugins: [{
+      afterDraw: chart => {
+          if (chart.tooltip?._active?.length) {
+              let x = chart.tooltip._active[0].element.x;
+              let yAxis = chart.scales.y;
+              let ctx = chart.ctx;
+              ctx.save();
+              ctx.beginPath();
+              ctx.moveTo(x, yAxis.top);
+              ctx.lineTo(x, yAxis.bottom);
+              ctx.lineWidth = 1;
+              ctx.strokeStyle = '#ff0000';
+              ctx.stroke();
+              ctx.restore();
+          }
+      }
+  }],
   }
 
   return (
@@ -194,6 +211,8 @@ export default function MovableChart() {
               width={"100%"}
               height={"400px"}
               type={options.type}
+              className={"h-full"}
+              plugins={options.plugins}
           />
         </div>
       </div>
