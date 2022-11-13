@@ -93,16 +93,23 @@ class Portfolio:
             self.bonds.append((bond_rate, bond_value * (1 + bond_rate)))
 
 
-def simulate_life(stocks_historical, bonds_historical, savings, _i, num_years):
+def simulate_life(stocks_historical, bonds_historical, savings, _i, num_years, sample=True):
     stocks_rate_sum = 0
     bonds_rate_sum = 0
+
+    if not sample:
+        assert len(stocks_historical) >= num_years and len(bonds_historical) >= num_years
 
     def simulate_year(p: Portfolio, yr: int):
         nonlocal stocks_rate_sum, bonds_rate_sum
 
         # Set rates for next year
-        stocks_rate = random.choice(stocks_historical)
-        bonds_rate = random.choice(bonds_historical)
+        if sample:
+            stocks_rate = random.choice(stocks_historical)
+            bonds_rate = random.choice(bonds_historical)
+        else:
+            stocks_rate = stocks_historical[year]
+            bonds_rate = bonds_historical[year]
 
         stocks_rate_sum += stocks_rate
         bonds_rate_sum += bonds_rate
@@ -136,7 +143,7 @@ def simulate_life(stocks_historical, bonds_historical, savings, _i, num_years):
 def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], start_year, num_sims=3):
     _i = investments  # name is too long
     last_n = 2022 - start_year
-    assert 0 < last_n < 90
+    assert 1928 < start_year < 2022
     assert len(set(len(x) for x in (_i['cash'], _i['stocks'], _i['bonds'], savings))) == 1
     num_years = len(_i['cash'])
     assert all(_i['cash'][i] + _i['stocks'][i] + _i['bonds'][i] == 1 for i in range(num_years))
@@ -175,9 +182,29 @@ def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], s
     }
 
 
-def backtest_sim(cash: list[float], stocks: list[float], bonds: list[float], savings: list[float], start_year=None):
-    # default to earliest year we have data for
-    pass
+def backtest_sim(investments: dict[str, list[float]], savings: list[float], start_year: int):
+    _i = investments  # name is too long
+    assert 1928 < start_year < 2022
+    assert len(set(len(x) for x in (_i['cash'], _i['stocks'], _i['bonds'], savings))) == 1
+    num_years = len(_i['cash'])
+    assert all(_i['cash'][i] + _i['stocks'][i] + _i['bonds'][i] == 1 for i in range(num_years))
+    num_years = min(num_years, 2022 - start_year)
+
+    # Build bootstrap banks out of last_n years
+    stocks_historical = [x[1] for x in STOCKS_HISTORICAL if start_year <= x[0]]
+    bonds_historical = [x[1] for x in BONDS_HISTORICAL if start_year <= x[0]]
+
+    # Do one simulation using real data
+    timeline, stocks_rate_sum, bonds_rate_sum = simulate_life(stocks_historical, bonds_historical, savings, _i,
+                                                              num_years, sample=False)
+
+    return {
+        'time_series': {
+            'net_worth': timeline
+        },
+        'avg_stocks_yoy': stocks_rate_sum / num_years,
+        'avg_bonds_yoy': bonds_rate_sum / num_years,
+    }
 
 
 if __name__ == '__main__':
@@ -187,12 +214,20 @@ if __name__ == '__main__':
     SAVINGS = [5000] * 40
 
     # Number of years of history to use for calculations
-    LAST_N = 65
+    START_YEAR = 1957
 
     monte_carlo_results = monte_carlo_sim({
         'cash': CASH,
         'stocks': STOCKS,
         'bonds': BONDS,
-    }, SAVINGS, LAST_N, num_sims=5000)
+    }, SAVINGS, START_YEAR, num_sims=5000)
 
-    print(json.dumps(monte_carlo_results, indent=2))
+    # print(json.dumps(monte_carlo_results, indent=2))
+
+    backtest_results = backtest_sim({
+        'cash': CASH,
+        'stocks': STOCKS,
+        'bonds': BONDS,
+    }, SAVINGS, START_YEAR)
+
+    print(json.dumps(backtest_results, indent=2))
