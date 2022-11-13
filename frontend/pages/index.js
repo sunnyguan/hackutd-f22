@@ -38,7 +38,7 @@ export default function Home() {
         {info ? <>
         <Header tab={tab} setTab={setTab} />
         <div className={"mx-9"}>
-          <h1 className={"text-5xl text-center m-10 font-bold"} >
+          <h1 className={"text-5xl text-center mx-10 font-bold"} >
             {tab}
           </h1>
           <Switch tab={tab} />

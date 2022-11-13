@@ -415,8 +415,8 @@ export default function InvestmentChart({bump}) {
         </div>
       </div>
 
-      <div className="flow-root px-4">
-        <div className="float-left space-x-4 mb-4">
+      <div className="flow-root px-4 text-2xl">
+        <div className="float-left space-x-4">
           <a>Start Year:</a>
           <button
             className={"bg-transparent transition-colors hover:bg-blue-500 hover:bg-opacity-50 text-white py-1 px-4 border border-blue-700 rounded"}
