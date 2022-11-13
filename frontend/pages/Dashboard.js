@@ -19,7 +19,7 @@ export default function Dashboard () {
           <InvestmentChart bump={id}/>
         </div>
         <hr />
-        <div className={"grid grid-cols-4 divide-x text-center"}>
+        <div className={"grid grid-cols-4 divide-x text-center pt-4"}>
           <MovableChart update={update}/>
           <SalaryChart update={update}/>
           <Budget update={update}/>
