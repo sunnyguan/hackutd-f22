@@ -26,6 +26,7 @@ export default function MovableChart() {
         JSON.parse(localStorage.getItem('investments-2')) || [
           {x: 20, y: 50}, {x: 100, y: 50}
         ];
+    save(chartRef.current.data.datasets);
     chartRef.current.update();
   }, []);
 

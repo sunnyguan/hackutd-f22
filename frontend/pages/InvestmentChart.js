@@ -36,7 +36,14 @@ export default function InvestmentChart() {
     const cash = JSON.parse(localStorage.getItem('investments-0'));
     const bonds = JSON.parse(localStorage.getItem('investments-1'));
     const stocks = JSON.parse(localStorage.getItem('investments-2'));
-    const savings = JSON.parse(localStorage.getItem('salary'));
+    const savings = JSON.parse(localStorage.getItem('salary')) || [
+            {
+              x: 20, y: 50000
+            },
+            {
+              x: 100, y: 500000
+            }
+        ];
 
     let info = {
       "time_series": {
