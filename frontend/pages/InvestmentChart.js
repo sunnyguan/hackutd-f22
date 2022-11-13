@@ -45,7 +45,7 @@ export default function InvestmentChart() {
         "bonds": calculate(bonds),
         "savings": calculate(savings),
       },
-      "last_n": 65,
+      "start_year": 1957,
       "num_sims": 5000
     };
 
@@ -62,7 +62,7 @@ export default function InvestmentChart() {
 
     console.log(info)
 
-    fetch('http://127.0.0.1:5000/compute-returns', {
+    fetch('http://127.0.0.1:5000/compute-monte-carlo', {
         method: 'POST',
         headers: {
             "Content-Type": "application/json"
