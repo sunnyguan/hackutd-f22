@@ -13,7 +13,6 @@ export default function InvestmentChart({bump}) {
   const [startYearModalOpen, setStartYearModalOpen] = useState(false);
   const [startYear, setStartYear] = useState(1960);
   const [simSelected, setSimSelected] = useState(true);
-  const [backtestStart, setBacktestStart] = useState(2000);
 
   // for (let i = 0; i < 101; i++) {
   //   TEST["time_series"]["cash"].push(0.8);
@@ -124,7 +123,7 @@ export default function InvestmentChart({bump}) {
         setMaxRange(mx * 1.1);
       } else {
         let temp = [];
-        for (let i = 20; i <= 100; i++) {
+        for (let i = 20; i < 20 + data.time_series.net_worth.length; i++) {
           let val = data.time_series.net_worth[i - 20];
           if (!isNaN(val)) {
             mx = Math.max(mx, val);
@@ -258,7 +257,7 @@ export default function InvestmentChart({bump}) {
 
   function handleChange (e) {
     e.preventDefault()
-    setBacktestStart(e.target.value);
+    setStartYear(e.target.value);
   }
   return (
     <>
@@ -283,11 +282,10 @@ export default function InvestmentChart({bump}) {
               <span className="sr-only">Close modal</span>
             </button>
             <div className="p-6 text-center text-black">
-              <input type={"text"} value={backtestStart} onChange={handleChange} />
+              <input type={"text"} value={startYear} onChange={handleChange} />
               <br />
               <button className={"text-white mt-2"} onClick={(e) => {
                 setStartYearModalOpen(false)
-                setStartYear(backtestStart);
                 update()
               }}>Submit</button>
             </div>
