@@ -95,33 +95,47 @@ export default function InvestmentChart({bump}) {
     }
 
     console.log(info)
-
-    fetch('http://127.0.0.1:5000/compute-monte-carlo', {
+    const method = simSelected ? 'monte-carlo' : 'backtest';
+    fetch(`http://127.0.0.1:5000/compute-${method}`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify(info)
     }).then(res => res.json()).then(data => {
-      let temp = [];
-      for (let i = 20; i <= 100; i++)
-        temp.push({x: i, y: data.time_series.mid[i-20]});
-      setNetWorth(temp);
-
-      temp = [];
-      for (let i = 20; i <= 100; i++)
-        temp.push({x: i, y: data.time_series.low[i-20]});
-      setNetWorthLow(temp);
-
-      temp = [];
       let mx = 0;
-      for (let i = 20; i <= 100; i++) {
-        temp.push({x: i, y: data.time_series.high[i-20]});
-        mx = Math.max(mx, data.time_series.high[i-20]);
-      }
-      setNetWorthHigh(temp);
+      if (method === 'monte-carlo') {
+        let temp = [];
+        for (let i = 20; i <= 100; i++)
+          temp.push({x: i, y: data.time_series.mid[i - 20]});
+        setNetWorth(temp);
 
-      setMaxRange(mx * 1.1);
+        temp = [];
+        for (let i = 20; i <= 100; i++)
+          temp.push({x: i, y: data.time_series.low[i - 20]});
+        setNetWorthLow(temp);
+
+        temp = [];
+        for (let i = 20; i <= 100; i++) {
+          temp.push({x: i, y: data.time_series.high[i - 20]});
+          mx = Math.max(mx, data.time_series.high[i - 20]);
+        }
+        setNetWorthHigh(temp);
+        setMaxRange(mx * 1.1);
+      } else {
+        let temp = [];
+        for (let i = 20; i <= 100; i++) {
+          let val = data.time_series.net_worth[i - 20];
+          if (!isNaN(val)) {
+            mx = Math.max(mx, val);
+            temp.push({x: i, y: val});
+          }
+        }
+        setNetWorth(temp);
+        setNetWorthLow([])
+        setNetWorthHigh([])
+        setMaxRange(mx * 1.1);
+      }
     }).catch(err => {
       alert(err)
     });
