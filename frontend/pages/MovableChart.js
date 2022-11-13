@@ -62,8 +62,8 @@ export default function MovableChart({update}) {
         label: 'Cash',
         yAxisID: 'y',
         data: investment1,
-        backgroundColor: "salmon",
-        borderColor: "red",
+        backgroundColor: "rgba(255, 219, 153, 0.25)",
+        borderColor: "rgb(255, 219, 153)",
         order: 2,
         dragData: false,
         ...POINT_PROPS,
@@ -72,8 +72,8 @@ export default function MovableChart({update}) {
         label: 'Bonds',
         yAxisID: 'y2',
         data: investment2,
-        backgroundColor: "lightgreen",
-        borderColor: "green",
+        backgroundColor: "rgba(255, 176, 31, 0.25)",
+        borderColor: "rgb(255, 176, 31)",
         order: 1,
         tension: 0.2,
         ...POINT_PROPS
@@ -82,8 +82,8 @@ export default function MovableChart({update}) {
         yAxisID: 'y3',
         tension: 0.2,
         data: investment3,
-        backgroundColor: "lightblue",
-        borderColor: "blue",
+        backgroundColor: "rgba(102, 66, 0, 0.25)",
+        borderColor: "rgb(102, 66, 0)",
         order: 0,
         ...POINT_PROPS
       }]

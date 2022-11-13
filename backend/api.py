@@ -10,6 +10,8 @@ app = Flask(__name__)
 CORS(app)
 
 
+EXPENSES = [(20, 10000, 90000, 0.037), (25, 8000, 22000, 0.044), (32, 80000, 320000, 0.053)]
+
 @app.route('/', methods=['GET'])
 def root_():
     return make_response({
@@ -27,14 +29,16 @@ def compute_monte_carlo():
             'bonds': j['time_series']['bonds'],
         }
         savings = j['time_series']['savings']
+        loans = j['time_series']['loans']
         start_year = j['start_year']
         num_sims = min(10000, max(100, j['num_sims']))
 
-        monte_carlo_results = monte_carlo_sim(investments, savings, start_year, num_sims)
+        monte_carlo_results = monte_carlo_sim(investments, savings, loans, EXPENSES, start_year, num_sims)
     except AssertionError as e:
         _, _, tb = sys.exc_info()
         tb_info = traceback.extract_tb(tb)
         filename, line, func, text = tb_info[-1]
+        raise
         return make_response({
             'text': text,
             'loc': f"{filename}:{line}",
@@ -54,13 +58,15 @@ def compute_backtest_():
             'bonds': j['time_series']['bonds'],
         }
         savings = j['time_series']['savings']
+        loans = j['time_series']['loans']
         start_year = j['start_year']
 
-        backtest_results = backtest_sim(investments, savings, start_year)
+        backtest_results = backtest_sim(investments, savings, loans, EXPENSES, start_year)
     except AssertionError as e:
         _, _, tb = sys.exc_info()
         tb_info = traceback.extract_tb(tb)
         filename, line, func, text = tb_info[-1]
+        raise
         return make_response({
             'text': text,
             'loc': f"{filename}:{line}",
