@@ -18,6 +18,7 @@ export default function Dashboard () {
         <div className={"flex-1"}>
           <InvestmentChart bump={id}/>
         </div>
+        <hr />
         <div className={"grid grid-cols-4 divide-x text-center"}>
           <MovableChart update={update}/>
           <SalaryChart update={update}/>
