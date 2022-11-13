@@ -1,7 +1,10 @@
 import { Chart as ChartJS } from 'chart.js/auto'
-import { Chart }            from 'react-chartjs-2'
+import { Bar, Chart }            from 'react-chartjs-2'
 import {useEffect, useRef, useState} from "react";
 import 'chartjs-plugin-dragdata'
+import Slider from "rc-slider";
+import 'rc-slider/assets/index.css';
+import * as yearVis from '../years.json';
 
 export default function InvestmentChart({bump}) {
 
@@ -13,6 +16,7 @@ export default function InvestmentChart({bump}) {
   const [startYearModalOpen, setStartYearModalOpen] = useState(false);
   const [startYear, setStartYear] = useState(1960);
   const [simSelected, setSimSelected] = useState(true);
+  const [sliderYear, setSliderYear] = useState(1950);
 
   // for (let i = 0; i < 101; i++) {
   //   TEST["time_series"]["cash"].push(0.8);
@@ -289,11 +293,49 @@ export default function InvestmentChart({bump}) {
     e.preventDefault()
     setStartYear(e.target.value);
   }
+
+  const options2 = {
+    pan: {
+      enabled: true,
+      mode: "xy"
+    },
+    zoom: {
+      enabled: true,
+      drag: false,
+      mode: "xy"
+    },
+    scales: {
+      x: {
+        display: false,
+        min: 1929,
+        max: 2022,
+        type: "linear",
+        offset: false,
+        gridLines: {
+          offsetGridLines: false
+        },
+        title: {
+          display: true,
+          text: "Arrivals per minute"
+        }
+      }
+    },
+
+    plugins: {
+      beforeInit: function (chart, args, options) {
+        console.log("called");
+      },
+      afterDatasetDraw: () => {
+        console.log("called");
+      }
+    }
+  };
+
   return (
     <>
       <div id="popup-modal" tabIndex="-1" style={{display: startYearModalOpen ? 'block' : 'none'}}
            className="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 md:inset-0 h-modal md:h-full">
-        <div className="relative p-4 w-full max-w-md h-full md:h-auto m-auto" style={{
+        <div className="relative p-4 w-full max-w-2xl h-full md:h-auto m-auto" style={{
           top: "50%",
           transform: "translateY(-50%)"
         }}>
@@ -312,12 +354,48 @@ export default function InvestmentChart({bump}) {
               <span className="sr-only">Close modal</span>
             </button>
             <div className="p-6 text-center text-black">
-              <input type={"text"} value={startYear} onChange={handleChange} />
-              <br />
-              <button className={"text-white mt-2"} onClick={(e) => {
-                setStartYearModalOpen(false)
-                update()
-              }}>Submit</button>
+              <Bar
+                  data={{
+                    datasets: [
+                      {
+                        label: 'Unemployment',
+                        borderColor: "black",
+                        lineTension: 0,
+                        fill: true,
+                        borderJoinStyle: "round",
+                        data: yearVis.unemployment,
+                        borderWidth: 0.2,
+                        barPercentage: 1,
+                        categoryPercentage: 1,
+                        backgroundColor: "lightgreen",
+                        barThickness: "flex"
+                      }
+                    ]
+                  }}
+                  options={options2}
+                  plugins={[
+                    {
+                      afterDatasetDraw: () => {
+                        console.log("called");
+                      }
+                    }
+                  ]}
+              />
+              <Slider
+                  defaultValue={1950}
+                  className={"mt-4"}
+                  min={1929}
+                  max={2022}
+                  trackStyle={{ backgroundColor: 'white' }}
+                  railStyle={{ backgroundColor: 'lightblue' }}
+                  onAfterChange={e => {
+                    setStartYear(e)
+                  }}
+                  onChange={e => {
+                    setSliderYear(e);
+                  }}
+              />
+              <div className={"text-white"}>{sliderYear}</div>
             </div>
           </div>
         </div>
