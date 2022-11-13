@@ -20,12 +20,14 @@ export default function Home() {
   const [tab, setTab] = useState("Investments");
 
   return (
-      <>
+      <div style={{backgroundImage: "linear-gradient(180deg, #1F2833, #000000)", minHeight: '100vh', color: '#ffffff', fontSize: '25px'}}>
         <Header tab={tab} setTab={setTab} />
-        <div className={"mx-8"}>
-          <h1 className={"text-2xl text-center m-4"}>{tab}</h1>
+        <div className={"mx-9"}>
+          <h1 className={"text-5xl text-center m-10"} >
+            {tab}
+          </h1>
           <Switch tab={tab} />
         </div>
-      </>
+      </div>
   )
 }

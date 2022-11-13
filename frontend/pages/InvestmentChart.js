@@ -162,18 +162,42 @@ export default function InvestmentChart() {
           type: 'linear',
           max: maxRange,
           min: 0,
+          ticks: {
+            color: 'white'
+          }
         },
         y2: {
           type: 'linear',
           max: maxRange,
           min: 0,
-          display: false
+          display: false,
+          ticks: {
+            color: 'white'
+          }
         },
         y3: {
           type: 'linear',
           max: maxRange,
           min: 0,
-          display: false
+          display: false,
+          ticks: {
+            color: 'white'
+          }
+        },
+        x: {
+          ticks: {
+            color: 'white'
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: {
+            color: "white",  
+            font: {
+              size: 18 
+            }
+          }
         }
       },
       onHover: function(e) {

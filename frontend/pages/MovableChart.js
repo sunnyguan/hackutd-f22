@@ -106,18 +106,32 @@ export default function MovableChart() {
           type: 'linear',
           max: 100,
           min: 0,
-          display: false
+          display: false,
+          ticks: {
+            color: 'white'
+          }
         },
         y2: {
           type: 'linear',
           max: 100,
           min: 0,
-          display: false
+          display: false,
+          ticks: {
+            color: 'white'
+          }
         },
         y3: {
           type: 'linear',
           max: 100,
           min: 0,
+          ticks: {
+            color: 'white'
+          }
+        },
+        x: {
+          ticks: {
+            color: 'white'
+          }
         }
       },
       onHover: function(e) {
@@ -159,7 +173,6 @@ export default function MovableChart() {
             for (let i = datasetIndex + 1; i < datasets.length; i++)
               if (value.y < datasets[i].data[index].y)
                 return false;
-
           },
           onDragEnd: function(e, datasetIndex, index, value) {
             e.target.style.cursor = 'default'
@@ -180,8 +193,16 @@ export default function MovableChart() {
             save(datasets);
             chartRef.current.update();
           },
+        },
+        legend: {
+          labels: {
+            color: "white",  
+            font: {
+              size: 18 
+            }
+          }
         }
-      }
+      },
     },
     plugins: [{
       afterDraw: chart => {
