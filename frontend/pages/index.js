@@ -2,6 +2,7 @@ import MovableChart from "./MovableChart";
 import Header from "./Header";
 import {useState} from "react";
 import SalaryChart from "./SalaryChart";
+import InvestmentChart from "./InvestmentChart";
 
 export const headers = ["Home", "Budget", "Investments", "Salary"];
 
@@ -10,6 +11,8 @@ function Switch({tab}) {
     return <MovableChart />
   } else if (tab === "Salary") {
     return <SalaryChart />
+  } else if (tab === "Home") {
+    return <InvestmentChart />
   }
 }
 
