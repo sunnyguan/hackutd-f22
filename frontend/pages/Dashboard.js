@@ -2,6 +2,7 @@ import InvestmentChart from "./InvestmentChart";
 import MovableChart from "./MovableChart";
 import SalaryChart from "./SalaryChart";
 import {useState} from "react";
+import Budget from "./Budget";
 
 export default function Dashboard () {
 
@@ -19,7 +20,7 @@ export default function Dashboard () {
         <div className={"grid grid-cols-3 divide-x text-center"}>
           <MovableChart update={update}/>
           <SalaryChart update={update}/>
-          <div>c</div>
+          <Budget update={update}/>
         </div>
       </div>
   )

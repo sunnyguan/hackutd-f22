@@ -34,6 +34,17 @@ export default function InvestmentChart({id}) {
     return res;
   }
 
+  function diff(values1, values2) {
+    let res1 = calculate(values1);
+    let res2 = calculate(values2);
+    let res = [];
+    for (let i = 0; i < res1.length; i++) {
+      res.push((res1[i] - res2[i]) * 100);
+    }
+    console.log(res);
+    return res;
+  }
+
   function loadNetWorth() {
     const cash = JSON.parse(localStorage.getItem('investments-0')) || [
             {
@@ -57,13 +68,16 @@ export default function InvestmentChart({id}) {
               x: 100, y: 500000
             }
         ];
+    const budget = JSON.parse(localStorage.getItem('budget-0')) || [
+      {x: 20, y: 28000}, {x: 100, y: 30000}
+    ];
 
     let info = {
       "time_series": {
         "cash": calculate(cash),
         "stocks": calculate(stocks),
         "bonds": calculate(bonds),
-        "savings": calculate(savings),
+        "savings": diff(savings, budget),
       },
       "start_year": 1957,
       "num_sims": 5000
@@ -108,6 +122,8 @@ export default function InvestmentChart({id}) {
       setNetWorthHigh(temp);
 
       setMaxRange(mx * 1.1);
+    }).catch(err => {
+      alert(err)
     });
   }
 
@@ -169,9 +185,6 @@ export default function InvestmentChart({id}) {
       }]
     },
     options: {
-      animation: {
-        duration: 0
-      },
       scales: {
         y1: {
           type: 'linear',
