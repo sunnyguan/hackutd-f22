@@ -3,9 +3,12 @@ import { Chart }            from 'react-chartjs-2';
 import {useEffect, useRef, useState} from "react";
 import 'chartjs-plugin-dragdata';
 
-export default function MovableChart() {
+export default function MovableChart({update}) {
 
   const chartRef = useRef(null);
+  const [investment1, setInvestment1] = useState([]);
+  const [investment2, setInvestment2] = useState([]);
+  const [investment3, setInvestment3] = useState([]);
 
   function save(datasets) {
     localStorage.setItem('investments-0', JSON.stringify(datasets[0].data));
@@ -14,19 +17,18 @@ export default function MovableChart() {
   }
 
   useEffect(() => {
-    chartRef.current.data.datasets[0].data =
-        JSON.parse(localStorage.getItem('investments-0')) || [
+        setInvestment1(JSON.parse(localStorage.getItem('investments-0')) || [
           {x: 20, y: 100}, {x: 100, y: 100}
-        ];
-    chartRef.current.data.datasets[1].data =
+        ]);
+    setInvestment2(
         JSON.parse(localStorage.getItem('investments-1')) || [
           {x: 20, y: 75}, {x: 100, y: 75}
-        ];
-    chartRef.current.data.datasets[2].data =
+        ]);
+    setInvestment3(
         JSON.parse(localStorage.getItem('investments-2')) || [
           {x: 20, y: 50}, {x: 100, y: 50}
-        ];
-    save(chartRef.current.data.datasets);
+        ]);
+    // save(chartRef.current.data.datasets);
     chartRef.current.update();
   }, []);
 
@@ -59,14 +61,7 @@ export default function MovableChart() {
       datasets: [{
         label: 'Cash',
         yAxisID: 'y',
-        data: [
-            {
-              x: 20, y: 100
-            },
-            {
-              x: 100, y: 100
-            }
-        ],
+        data: investment1,
         backgroundColor: "salmon",
         borderColor: "red",
         order: 2,
@@ -76,9 +71,7 @@ export default function MovableChart() {
       }, {
         label: 'Bonds',
         yAxisID: 'y2',
-        data: [
-            {x: 20, y: 75}, {x: 100, y: 75}
-        ],
+        data: investment2,
         backgroundColor: "lightgreen",
         borderColor: "green",
         order: 1,
@@ -88,9 +81,7 @@ export default function MovableChart() {
         label: 'Stocks',
         yAxisID: 'y3',
         tension: 0.2,
-        data: [
-          {x: 20, y: 25}, {x: 100, y: 25}
-        ],
+        data: investment3,
         backgroundColor: "lightblue",
         borderColor: "blue",
         order: 0,
@@ -192,6 +183,7 @@ export default function MovableChart() {
 
             save(datasets);
             chartRef.current.update();
+            update();
           },
         },
         legend: {

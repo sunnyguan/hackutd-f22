@@ -3,9 +3,27 @@ import { Chart }            from 'react-chartjs-2'
 import {useEffect, useRef, useState} from "react";
 import 'chartjs-plugin-dragdata'
 
-export default function SalaryChart() {
+export default function SalaryChart({update}) {
 
   const chartRef = useRef(null);
+
+  const [salaryData, setSalaryData] = useState([
+            {
+              x: 20, y: 50000
+            },
+            {
+              x: 100, y: 500000
+            }]);
+
+  useEffect(() => {
+    setSalaryData(JSON.parse(localStorage.getItem('salary')) || [
+            {
+              x: 20, y: 50000
+            },
+            {
+              x: 100, y: 500000
+            }]);
+  }, []);
 
   const POINT_PROPS = {
     pointHitRadius: 25,
@@ -36,14 +54,7 @@ export default function SalaryChart() {
       datasets: [{
         label: 'Salary',
         yAxisID: 'y',
-        data: JSON.parse(localStorage.getItem('salary')) || [
-            {
-              x: 20, y: 50000
-            },
-            {
-              x: 100, y: 500000
-            }
-        ],
+        data: salaryData,
         backgroundColor: "lightgreen",
         borderColor: "green",
         order: 2,
@@ -132,6 +143,7 @@ export default function SalaryChart() {
             // }
 
             chartRef.current.update();
+            update();
           },
         },
         legend: {

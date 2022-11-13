@@ -2,8 +2,10 @@ import { Chart as ChartJS } from 'chart.js/auto'
 import { Chart }            from 'react-chartjs-2'
 import {useEffect, useRef, useState} from "react";
 import 'chartjs-plugin-dragdata'
+import MovableChart from "./MovableChart";
+import SalaryChart from "./SalaryChart";
 
-export default function InvestmentChart() {
+export default function InvestmentChart({id}) {
 
   const chartRef = useRef(null);
   const [netWorth, setNetWorth] = useState([]);
@@ -32,10 +34,21 @@ export default function InvestmentChart() {
     return res;
   }
 
-  useEffect(() => {
-    const cash = JSON.parse(localStorage.getItem('investments-0'));
-    const bonds = JSON.parse(localStorage.getItem('investments-1'));
-    const stocks = JSON.parse(localStorage.getItem('investments-2'));
+  function loadNetWorth() {
+    const cash = JSON.parse(localStorage.getItem('investments-0')) || [
+            {
+              x: 20, y: 100
+            },
+            {
+              x: 100, y: 100
+            }
+        ];
+    const bonds = JSON.parse(localStorage.getItem('investments-1')) || [
+            {x: 20, y: 75}, {x: 100, y: 75}
+        ];
+    const stocks = JSON.parse(localStorage.getItem('investments-2')) || [
+      {x: 20, y: 25}, {x: 100, y: 25}
+    ];
     const savings = JSON.parse(localStorage.getItem('salary')) || [
             {
               x: 20, y: 50000
@@ -96,7 +109,9 @@ export default function InvestmentChart() {
 
       setMaxRange(mx * 1.1);
     });
-  }, []);
+  }
+
+  useEffect(loadNetWorth, []);
 
   const POINT_PROPS = {
     pointHitRadius: 5,
@@ -208,6 +223,10 @@ export default function InvestmentChart() {
       responsive: true,
       maintainAspectRatio: false,
     }
+  }
+
+  function update() {
+    loadNetWorth();
   }
 
   return (

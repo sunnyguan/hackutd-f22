@@ -2,7 +2,7 @@ import MovableChart from "./MovableChart";
 import Header from "./Header";
 import {useState} from "react";
 import SalaryChart from "./SalaryChart";
-import InvestmentChart from "./InvestmentChart";
+import Dashboard from "./Dashboard";
 
 export const headers = ["Home", "Budget", "Investments", "Salary"];
 
@@ -12,12 +12,12 @@ function Switch({tab}) {
   } else if (tab === "Salary") {
     return <SalaryChart />
   } else if (tab === "Home") {
-    return <InvestmentChart />
+    return <Dashboard />
   }
 }
 
 export default function Home() {
-  const [tab, setTab] = useState("Investments");
+  const [tab, setTab] = useState("Home");
 
   return (
       <div style={{backgroundImage: "linear-gradient(180deg, #1F2833, #000000)", minHeight: '100vh', color: '#ffffff', fontSize: '25px'}}>
