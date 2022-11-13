@@ -17,7 +17,7 @@ export default function InvestmentChart({bump}) {
   const [startYearModalOpen, setStartYearModalOpen] = useState(false);
   const [startYear, setStartYear] = useState(2000);
   const [simSelected, setSimSelected] = useState(true);
-  const [sliderYear, setSliderYear] = useState(1950);
+  const [sliderYear, setSliderYear] = useState(2000);
 
   // for (let i = 0; i < 101; i++) {
   //   TEST["time_series"]["cash"].push(0.8);
@@ -412,7 +412,7 @@ export default function InvestmentChart({bump}) {
                   ]}
               />
               <Slider
-                  defaultValue={1950}
+                  defaultValue={2000}
                   className={"mt-4"}
                   min={1929}
                   max={2022}
