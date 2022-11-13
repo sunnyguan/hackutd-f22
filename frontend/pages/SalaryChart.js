@@ -57,7 +57,7 @@ export default function SalaryChart() {
       scales: {
         y: {
           type: 'linear',
-          max: 1000000,
+          max: 500000,
           min: 0,
         }
       },
@@ -115,13 +115,13 @@ export default function SalaryChart() {
 
             localStorage.setItem('salary', JSON.stringify(datasets[datasetIndex].data));
 
-            chartRef.current.options.scales = {
-              y: {
-                type: 'linear',
-                max: Math.round(value * 1.2),
-                min: 0,
-              }
-            }
+            // chartRef.current.options.scales = {
+            //   y: {
+            //     type: 'linear',
+            //     max: Math.round(value * 1.2),
+            //     min: 0,
+            //   }
+            // }
 
             chartRef.current.update();
           },

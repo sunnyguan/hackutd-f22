@@ -105,7 +105,7 @@ export default function MovableChart() {
           type: 'linear',
           max: 100,
           min: 0,
-          display: false
+          display: false,
         },
         y2: {
           type: 'linear',
@@ -158,7 +158,6 @@ export default function MovableChart() {
             for (let i = datasetIndex + 1; i < datasets.length; i++)
               if (value.y < datasets[i].data[index].y)
                 return false;
-
           },
           onDragEnd: function(e, datasetIndex, index, value) {
             e.target.style.cursor = 'default'
@@ -179,8 +178,16 @@ export default function MovableChart() {
             save(datasets);
             chartRef.current.update();
           },
+        },
+        legend: {
+          labels: {
+            color: "white",  
+            font: {
+              size: 18 
+            }
+          }
         }
-      }
+      },
     },
     plugins: [{
       afterDraw: chart => {
