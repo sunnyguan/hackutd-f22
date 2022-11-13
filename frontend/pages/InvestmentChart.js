@@ -27,6 +27,7 @@ export default function InvestmentChart() {
         res.push(newy / 100)
       }
     }
+    res.push(values[values.length - 1].y / 100);
     return res;
   }
 
