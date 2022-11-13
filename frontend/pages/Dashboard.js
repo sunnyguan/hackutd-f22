@@ -15,7 +15,7 @@ export default function Dashboard () {
   return (
       <div className={"flex flex-col"}>
         <div className={"flex-1"}>
-          <InvestmentChart key={id}/>
+          <InvestmentChart bump={id}/>
         </div>
         <div className={"grid grid-cols-3 divide-x text-center"}>
           <MovableChart update={update}/>

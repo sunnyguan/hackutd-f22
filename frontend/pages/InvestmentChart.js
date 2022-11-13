@@ -5,7 +5,7 @@ import 'chartjs-plugin-dragdata'
 import MovableChart from "./MovableChart";
 import SalaryChart from "./SalaryChart";
 
-export default function InvestmentChart({id}) {
+export default function InvestmentChart({bump}) {
 
   const chartRef = useRef(null);
   const [netWorth, setNetWorth] = useState([]);
@@ -82,7 +82,7 @@ export default function InvestmentChart({id}) {
         "savings": diff(savings, budget),
       },
       "start_year": 1957,
-      "num_sims": 5000
+      "num_sims": 1000
     };
 
     const length = info["time_series"]["cash"].length;
@@ -129,7 +129,7 @@ export default function InvestmentChart({id}) {
     });
   }
 
-  useEffect(loadNetWorth, []);
+  useEffect(loadNetWorth, [bump]);
 
   const POINT_PROPS = {
     pointHitRadius: 5,
