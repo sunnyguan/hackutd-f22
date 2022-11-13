@@ -9,6 +9,7 @@ export default function InvestmentChart() {
   const [netWorth, setNetWorth] = useState([]);
   const [netWorthLow, setNetWorthLow] = useState([]);
   const [netWorthHigh, setNetWorthHigh] = useState([]);
+  const [maxRange, setMaxRange] = useState(200000);
 
 
 
@@ -79,9 +80,14 @@ export default function InvestmentChart() {
       setNetWorthLow(temp);
 
       temp = [];
-      for (let i = 20; i <= 100; i++)
+      let mx = 0;
+      for (let i = 20; i <= 100; i++) {
         temp.push({x: i, y: data.time_series.high[i-20]});
+        mx = Math.max(mx, data.time_series.high[i-20]);
+      }
       setNetWorthHigh(temp);
+
+      setMaxRange(mx * 1.1);
     });
   }, []);
 
@@ -147,18 +153,18 @@ export default function InvestmentChart() {
       scales: {
         y1: {
           type: 'linear',
-          max: 5000000,
+          max: maxRange,
           min: 0,
         },
         y2: {
           type: 'linear',
-          max: 5000000,
+          max: maxRange,
           min: 0,
           display: false
         },
         y3: {
           type: 'linear',
-          max: 5000000,
+          max: maxRange,
           min: 0,
           display: false
         }
