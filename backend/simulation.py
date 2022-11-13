@@ -1,6 +1,9 @@
 import json
 import random
 from collections import deque, defaultdict
+from multiprocessing import Pool
+
+NUM_THREADS = 6
 
 STOCKS_HISTORICAL = [(1928, 0.4381), (1929, -0.0830), (1930, -0.2512), (1931, -0.4384), (1932, -0.0864), (1933, 0.4998),
                      (1934, -0.0119), (1935, 0.4674), (1936, 0.3194), (1937, -0.3534), (1938, 0.2928), (1939, -0.0110),
@@ -90,22 +93,13 @@ class Portfolio:
             self.bonds.append((bond_rate, bond_value * (1 + bond_rate)))
 
 
-def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], last_n=None, num_sims=3):
-    _i = investments  # name is too long
-    assert last_n < 90
-    assert len(set(len(x) for x in (_i['cash'], _i['stocks'], _i['bonds'], savings))) == 1
-    num_years = len(_i['cash'])
-    assert all(_i['cash'][i] + _i['stocks'][i] + _i['bonds'][i] == 1 for i in range(num_years))
-
-    # Build bootstrap banks out of last_n years
-    stocks_historical = [x[1] for x in STOCKS_HISTORICAL[-last_n:]]
-    bonds_historical = [x[1] for x in BONDS_HISTORICAL[-last_n:]]
-
+def simulate_life(stocks_historical, bonds_historical, savings, _i, num_years):
     stocks_rate_sum = 0
     bonds_rate_sum = 0
 
     def simulate_year(p: Portfolio, yr: int):
         nonlocal stocks_rate_sum, bonds_rate_sum
+
         # Set rates for next year
         stocks_rate = random.choice(stocks_historical)
         bonds_rate = random.choice(bonds_historical)
@@ -127,17 +121,45 @@ def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], l
         # Adjust bond and stock values (hopefully net growth)
         p.simulate_growth(stocks_rate)
 
-    sim_results = []
-    for sim_idx in range(num_sims):
-        sim_results.append([])
-        # Initialize portfolio
-        portfolio = Portfolio()
+    timeline = []
+    # Initialize portfolio
+    portfolio = Portfolio()
 
-        # Calculate year-end balances
-        for year in range(num_years):
-            simulate_year(portfolio, year)
-            sim_results[-1].append(portfolio.value())
+    # Calculate year-end balances
+    for year in range(num_years):
+        simulate_year(portfolio, year)
+        timeline.append(portfolio.value())
 
+    return timeline, stocks_rate_sum, bonds_rate_sum
+
+
+def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], last_n=None, num_sims=3):
+    _i = investments  # name is too long
+    assert last_n < 90
+    assert len(set(len(x) for x in (_i['cash'], _i['stocks'], _i['bonds'], savings))) == 1
+    num_years = len(_i['cash'])
+    assert all(_i['cash'][i] + _i['stocks'][i] + _i['bonds'][i] == 1 for i in range(num_years))
+
+    # Build bootstrap banks out of last_n years
+    stocks_historical = [x[1] for x in STOCKS_HISTORICAL[-last_n:]]
+    bonds_historical = [x[1] for x in BONDS_HISTORICAL[-last_n:]]
+
+    # Collect stats across all simulations on what rates get drawn
+    stocks_rate_sum = 0
+    bonds_rate_sum = 0
+
+    # Simulate in threads
+    with Pool(NUM_THREADS) as p:
+        jobs = [p.apply_async(simulate_life, (stocks_historical, bonds_historical, savings, _i, num_years)) for _ in
+                range(num_sims)]
+        sim_results = []
+        for job in jobs:
+            timeline, stocks_rate_sub_sum, bonds_rate_sub_sum = job.get()
+            sim_results.append(timeline)
+            stocks_rate_sum += stocks_rate_sub_sum
+            bonds_rate_sum += bonds_rate_sub_sum
+
+    # Build results and return
     aggregate_results = defaultdict(list)
     for sim_year in zip(*sim_results):
         sim_year = sorted(sim_year)
@@ -170,6 +192,6 @@ if __name__ == '__main__':
         'cash': CASH,
         'stocks': STOCKS,
         'bonds': BONDS,
-    }, SAVINGS, LAST_N, num_sims=1000)
+    }, SAVINGS, LAST_N, num_sims=5000)
 
     print(json.dumps(monte_carlo_results, indent=2))
