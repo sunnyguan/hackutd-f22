@@ -4,8 +4,9 @@ import {useEffect, useState} from "react";
 import SalaryChart from "./SalaryChart";
 import Dashboard from "./Dashboard";
 import LandingPage from "./LandingPage"
+import Budget from "./Budget";
 
-export const headers = ["Dashboard", "Investments", "Salary"];
+export const headers = ["Dashboard", "Investments", "Salary", "Budget"];
 
 function Switch({tab}) {
   if (tab === "Investments") {
@@ -14,6 +15,8 @@ function Switch({tab}) {
     return <SalaryChart />
   } else if (tab === "Dashboard") {
     return <Dashboard />
+  } else if (tab === "Budget") {
+    return <Budget update={() => {}}/>
   }
 }
 

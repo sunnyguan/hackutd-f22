@@ -127,6 +127,7 @@ export default function Budget({update}) {
         },
         y3: {
           type: 'linear',
+          display: false,
           max: 100000,
           min: 0,
           ticks: {
