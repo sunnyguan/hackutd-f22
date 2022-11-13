@@ -71,7 +71,7 @@ export default function Home() {
           </div>
         </div>
         <div className={"mx-9"}>
-          <h1 className={"text-5xl text-center m-10 font-bold drop-shadow-[5px_5px_10px_#66A2FC]"} >
+          <h1 className={"text-5xl text-center mx-10 font-bold drop-shadow-[5px_5px_10px_#66A2FC]"} >
             {tab}
           </h1>
           <Switch tab={tab}/>
