@@ -3,6 +3,15 @@ import random
 from collections import deque, defaultdict
 from multiprocessing import Pool
 
+
+def ASSERT_DOUBLE_EQ(a, b):
+    assert abs(a-b) < 0.001
+
+
+def ASSERT_DOUBLE_GEQ(a, b):
+    assert a-b > -0.001
+
+
 NUM_THREADS = 6
 
 STOCKS_HISTORICAL = [(1928, 0.4381), (1929, -0.0830), (1930, -0.2512), (1931, -0.4384), (1932, -0.0864), (1933, 0.4998),
@@ -78,13 +87,13 @@ class Portfolio:
             self.cash += oldest_bond_value
 
         # Buy bonds @ current rate (even 0 in bonds)
-        assert bonds_target >= bonds_value
+        ASSERT_DOUBLE_GEQ(bonds_target, bonds_value)  # Soft assertion in case sell all bonds
         bonds_diff = bonds_target - bonds_value
         self.bonds.append((bonds_rate, bonds_diff))
         self.cash -= bonds_diff
 
         # The remaining cash should be what we expect it to be
-        assert abs(self.cash / cash_target - 1) < 0.01
+        ASSERT_DOUBLE_EQ(self.cash / cash_target, 1)
 
     def simulate_growth(self, stocks_rate):
         self.stocks *= (1 + stocks_rate)
@@ -146,7 +155,8 @@ def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], s
     assert 1928 < start_year < 2022
     assert len(set(len(x) for x in (_i['cash'], _i['stocks'], _i['bonds'], savings))) == 1
     num_years = len(_i['cash'])
-    assert all(_i['cash'][i] + _i['stocks'][i] + _i['bonds'][i] == 1 for i in range(num_years))
+    for i in range(num_years):
+        ASSERT_DOUBLE_EQ(_i['cash'][i] + _i['stocks'][i] + _i['bonds'][i], 1)
 
     # Build bootstrap banks out of last_n years
     stocks_historical = [x[1] for x in STOCKS_HISTORICAL[-last_n:]]
@@ -186,9 +196,9 @@ def backtest_sim(investments: dict[str, list[float]], savings: list[float], star
     _i = investments  # name is too long
     assert 1928 < start_year < 2022
     assert len(set(len(x) for x in (_i['cash'], _i['stocks'], _i['bonds'], savings))) == 1
-    num_years = len(_i['cash'])
-    assert all(_i['cash'][i] + _i['stocks'][i] + _i['bonds'][i] == 1 for i in range(num_years))
-    num_years = min(num_years, 2022 - start_year)
+    num_years = min(len(_i['cash']), 2022 - start_year)
+    for i in range(num_years):
+        ASSERT_DOUBLE_EQ(_i['cash'][i] + _i['stocks'][i] + _i['bonds'][i], 1)
 
     # Build bootstrap banks out of last_n years
     stocks_historical = [x[1] for x in STOCKS_HISTORICAL if start_year <= x[0]]

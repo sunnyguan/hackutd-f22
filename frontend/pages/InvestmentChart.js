@@ -9,6 +9,7 @@ export default function InvestmentChart() {
   const [netWorth, setNetWorth] = useState([]);
   const [netWorthLow, setNetWorthLow] = useState([]);
   const [netWorthHigh, setNetWorthHigh] = useState([]);
+  const [maxRange, setMaxRange] = useState(200000);
 
 
 
@@ -27,6 +28,7 @@ export default function InvestmentChart() {
         res.push(newy / 100)
       }
     }
+    res.push(values[values.length - 1].y / 100);
     return res;
   }
 
@@ -43,7 +45,7 @@ export default function InvestmentChart() {
         "bonds": calculate(bonds),
         "savings": calculate(savings),
       },
-      "last_n": 65,
+      "start_year": 1957,
       "num_sims": 5000
     };
 
@@ -60,7 +62,7 @@ export default function InvestmentChart() {
 
     console.log(info)
 
-    fetch('http://127.0.0.1:5000/compute-returns', {
+    fetch('http://127.0.0.1:5000/compute-monte-carlo', {
         method: 'POST',
         headers: {
             "Content-Type": "application/json"
@@ -78,9 +80,14 @@ export default function InvestmentChart() {
       setNetWorthLow(temp);
 
       temp = [];
-      for (let i = 20; i <= 100; i++)
+      let mx = 0;
+      for (let i = 20; i <= 100; i++) {
         temp.push({x: i, y: data.time_series.high[i-20]});
+        mx = Math.max(mx, data.time_series.high[i-20]);
+      }
       setNetWorthHigh(temp);
+
+      setMaxRange(mx * 1.1);
     });
   }, []);
 
@@ -146,18 +153,18 @@ export default function InvestmentChart() {
       scales: {
         y1: {
           type: 'linear',
-          max: 5000000,
+          max: maxRange,
           min: 0,
         },
         y2: {
           type: 'linear',
-          max: 5000000,
+          max: maxRange,
           min: 0,
           display: false
         },
         y3: {
           type: 'linear',
-          max: 5000000,
+          max: maxRange,
           min: 0,
           display: false
         }
