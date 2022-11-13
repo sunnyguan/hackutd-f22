@@ -12,7 +12,9 @@ export default function InvestmentChart({id}) {
   const [netWorthLow, setNetWorthLow] = useState([]);
   const [netWorthHigh, setNetWorthHigh] = useState([]);
   const [maxRange, setMaxRange] = useState(200000);
-
+  const [startYearModalOpen, setStartYearModalOpen] = useState(false);
+  const [startYear, setStartYear] = useState(1960);
+  const [simSelected, setSimSelected] = useState(true);
 
 
   // for (let i = 0; i < 101; i++) {
@@ -243,18 +245,53 @@ export default function InvestmentChart({id}) {
   }
 
   return (
+    <>
+      <div className="flow-root px-4">
+        <p className="float-left space-x-4 mb-4">
+          <a>Start Year:</a>
+          <button
+            className={"bg-transparent transition-colors hover:bg-blue-500 hover:bg-opacity-50 text-white py-1 px-4 border border-blue-700 rounded"}
+            onClick={()=>setStartYearModalOpen(true)}
+          >
+            {startYear}
+          </button>
+        </p>
+        <p className="float-right">
+          <div className="inline-flex space-x-1 bg-black rounded">
+            <button
+              className={
+                (simSelected ? "bg-blue-400" : "bg-gray-300") +
+                " transition-colors hover:bg-gray-400 text-gray-800 font-bold py-1 px-4 rounded-l-md"
+              }
+              onClick={()=>setSimSelected(true)}
+            >
+              Simulate
+            </button>
+            <button
+              className={
+                (simSelected ? "bg-gray-300" : "bg-blue-400") +
+                " transition-colors hover:bg-gray-400 text-gray-800 font-bold py-1 px-4 rounded-r-md"
+              }
+              onClick={()=>setSimSelected(false)}
+            >
+              Backtest
+            </button>
+          </div>
+        </p>
+      </div>
       <div className={"flex"}>
         <div className={"flex-1"}>
           <Chart
-              ref={chartRef}
-              options={options.options}
-              data={options.data}
-              width={"100%"}
-              height={"400px"}
-              type={options.type}
+            ref={chartRef}
+            options={options.options}
+            data={options.data}
+            width={"100%"}
+            height={"400px"}
+            type={options.type}
           />
         </div>
       </div>
+    </>
   )
 
 }
