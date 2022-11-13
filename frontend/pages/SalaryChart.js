@@ -3,31 +3,9 @@ import { Chart }            from 'react-chartjs-2'
 import {useEffect, useRef, useState} from "react";
 import 'chartjs-plugin-dragdata'
 
-export default function MovableChart() {
+export default function SalaryChart() {
 
   const chartRef = useRef(null);
-
-  function save(datasets) {
-    localStorage.setItem('investments-0', JSON.stringify(datasets[0].data));
-    localStorage.setItem('investments-1', JSON.stringify(datasets[1].data));
-    localStorage.setItem('investments-2', JSON.stringify(datasets[2].data));
-  }
-
-  useEffect(() => {
-    chartRef.current.data.datasets[0].data =
-        JSON.parse(localStorage.getItem('investments-0')) || [
-          {x: 20, y: 100}, {x: 100, y: 100}
-        ];
-    chartRef.current.data.datasets[1].data =
-        JSON.parse(localStorage.getItem('investments-1')) || [
-          {x: 20, y: 75}, {x: 100, y: 75}
-        ];
-    chartRef.current.data.datasets[2].data =
-        JSON.parse(localStorage.getItem('investments-2')) || [
-          {x: 20, y: 50}, {x: 100, y: 50}
-        ];
-    chartRef.current.update();
-  }, []);
 
   const POINT_PROPS = {
     pointHitRadius: 25,
@@ -56,44 +34,20 @@ export default function MovableChart() {
     type: 'scatter',
     data: {
       datasets: [{
-        label: 'Cash',
+        label: 'Salary',
         yAxisID: 'y',
-        data: [
+        data: JSON.parse(localStorage.getItem('salary')) || [
             {
-              x: 20, y: 100
+              x: 20, y: 50000
             },
             {
-              x: 100, y: 100
+              x: 100, y: 500000
             }
-        ],
-        backgroundColor: "salmon",
-        borderColor: "red",
-        order: 2,
-        dragData: false,
-        ...POINT_PROPS,
-        pointRadius: 0
-      }, {
-        label: 'Bonds',
-        yAxisID: 'y2',
-        data: [
-            {x: 20, y: 75}, {x: 100, y: 75}
         ],
         backgroundColor: "lightgreen",
         borderColor: "green",
-        order: 1,
-        tension: 0.2,
-        ...POINT_PROPS
-      }, {
-        label: 'Stocks',
-        yAxisID: 'y3',
-        tension: 0.2,
-        data: [
-          {x: 20, y: 25}, {x: 100, y: 25}
-        ],
-        backgroundColor: "lightblue",
-        borderColor: "blue",
-        order: 0,
-        ...POINT_PROPS
+        order: 2,
+        ...POINT_PROPS,
       }]
     },
     options: {
@@ -103,19 +57,7 @@ export default function MovableChart() {
       scales: {
         y: {
           type: 'linear',
-          max: 100,
-          min: 0,
-          display: false
-        },
-        y2: {
-          type: 'linear',
-          max: 100,
-          min: 0,
-          display: false
-        },
-        y3: {
-          type: 'linear',
-          max: 100,
+          max: 1000000,
           min: 0,
         }
       },
@@ -131,10 +73,7 @@ export default function MovableChart() {
         console.log(x, y);
 
         let datasets = chart.data.datasets;
-        for (let dataset of datasets) {
-          pushPoint(dataset.data, Math.round(x));
-        }
-        save(datasets);
+        pushPoint(datasets[0].data, Math.round(x));
 
         chart.update();
       },
@@ -151,14 +90,12 @@ export default function MovableChart() {
           onDrag: function(e, datasetIndex, index, value) {
             e.target.style.cursor = 'grabbing'
             let datasets = chartRef.current.data.datasets;
-            console.log(datasets)
             for (let i = 0; i < datasetIndex; i++)
               if (value.y > datasets[i].data[index].y)
                 return false;
             for (let i = datasetIndex + 1; i < datasets.length; i++)
               if (value.y < datasets[i].data[index].y)
                 return false;
-
           },
           onDragEnd: function(e, datasetIndex, index, value) {
             e.target.style.cursor = 'default'
@@ -176,7 +113,16 @@ export default function MovableChart() {
               }
             console.log(datasetIndex, index, value)
 
-            save(datasets);
+            localStorage.setItem('salary', JSON.stringify(datasets[datasetIndex].data));
+
+            chartRef.current.options.scales = {
+              y: {
+                type: 'linear',
+                max: Math.round(value * 1.2),
+                min: 0,
+              }
+            }
+
             chartRef.current.update();
           },
         }
