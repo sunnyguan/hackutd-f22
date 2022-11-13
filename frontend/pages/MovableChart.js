@@ -200,6 +200,11 @@ export default function MovableChart({update}) {
             return a.datasetIndex - b.datasetIndex;
           },
           callbacks: {
+            title: (contexts) => {
+              if (!contexts) return "";
+              const x = contexts[0].parsed.x;
+              return "Age: " + x;
+            },
             label: (context) => {
               let label = context.dataset.label || '';
 

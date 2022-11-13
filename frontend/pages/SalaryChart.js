@@ -26,7 +26,7 @@ export default function SalaryChart({update}) {
   }, []);
 
   const POINT_PROPS = {
-    pointHitRadius: 25,
+    pointHitRadius: 10,
     pointRadius: 5,
     pointHoverRadius: 10,
     fill: true,
@@ -152,6 +152,22 @@ export default function SalaryChart({update}) {
             font: {
               size: 18 
             }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            title: (contexts) => {
+              if (!contexts) return "";
+              const x = contexts[0].parsed.x;
+              return "Age: " + x;
+            },
+            label: (context) => {
+              if (context.parsed.y !== null) {
+                const num = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                return num.toString();
+              }
+              return "";
+            },
           }
         }
       }

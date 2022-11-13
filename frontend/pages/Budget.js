@@ -33,7 +33,7 @@ export default function Budget({update}) {
   }, []);
 
   const POINT_PROPS = {
-    pointHitRadius: 25,
+    pointHitRadius: 10,
     pointRadius: 5,
     pointHoverRadius: 10,
     fill: true,
@@ -191,6 +191,30 @@ export default function Budget({update}) {
             font: {
               size: 18 
             }
+          }
+        },
+        tooltip: {
+          mode: 'x',
+          itemSort: (a, b) => {
+            return a.datasetIndex - b.datasetIndex;
+          },
+          callbacks: {
+            title: (contexts) => {
+              if (!contexts) return "";
+              const x = contexts[0].parsed.x;
+              return "Age: " + x;
+            },
+            label: (context) => {
+              let label = context.dataset.label || '';
+
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+              }
+              return label;
+            },
           }
         }
       },

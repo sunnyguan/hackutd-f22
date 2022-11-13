@@ -140,7 +140,7 @@ export default function InvestmentChart({bump}) {
     });
   }
 
-  useEffect(loadNetWorth, [bump]);
+  useEffect(loadNetWorth, [bump, startYear, backtestStart, simSelected]);
 
   const POINT_PROPS = {
     pointHitRadius: 5,
@@ -238,6 +238,30 @@ export default function InvestmentChart({bump}) {
             font: {
               size: 18 
             }
+          }
+        },
+        tooltip: {
+          mode: 'x',
+          itemSort: (a, b) => {
+            return a.datasetIndex - b.datasetIndex;
+          },
+          callbacks: {
+            title: (contexts) => {
+              if (!contexts) return "";
+              const x = contexts[0].parsed.x;
+              return "Age: " + x;
+            },
+            label: (context) => {
+              let label = context.dataset.label || '';
+
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+              }
+              return label;
+            },
           }
         }
       },
