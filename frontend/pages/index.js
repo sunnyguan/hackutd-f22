@@ -10,9 +10,9 @@ export const headers = ["Dashboard", "Investments", "Salary", "Budget"];
 
 function Switch({tab}) {
   if (tab === "Investments") {
-    return <MovableChart />
+    return <MovableChart update={() => {}}/>
   } else if (tab === "Salary") {
-    return <SalaryChart />
+    return <SalaryChart update={() => {}}/>
   } else if (tab === "Dashboard") {
     return <Dashboard />
   } else if (tab === "Budget") {

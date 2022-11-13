@@ -53,10 +53,10 @@ export default function LandingPage({signUpDone}) {
         <>
             {/* <img className={"mx-9"} src={img} /> */}
             <h1 className={"flex text-5xl text-center p-10 font-bold items-center justify-center"}>
-                Project Name
+                Financial Planner
             </h1>
             <p className={"text-center"}>
-                This project does abcxyz
+                Financial planning made easy.
             </p>
             <div className={"flex items-center justify-center mb-3"}>
                 {
