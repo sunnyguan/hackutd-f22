@@ -55,8 +55,8 @@ export default function SalaryChart({update}) {
         label: 'Salary',
         yAxisID: 'y',
         data: salaryData,
-        backgroundColor: "lightgreen",
-        borderColor: "green",
+        backgroundColor: "rgba(20, 225, 54, 0.25)",
+        borderColor: "rgb(20, 225, 54)",
         order: 2,
         ...POINT_PROPS,
       }]

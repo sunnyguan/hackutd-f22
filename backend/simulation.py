@@ -2,14 +2,15 @@ import json
 import random
 from collections import deque, defaultdict
 from multiprocessing import Pool
+import heapq
 
 
 def ASSERT_DOUBLE_EQ(a, b):
-    assert abs(a-b) < 0.001
+    assert abs(a - b) < 0.001
 
 
 def ASSERT_DOUBLE_GEQ(a, b):
-    assert a-b > -0.001
+    assert a - b > -0.001
 
 
 NUM_THREADS = 6
@@ -53,22 +54,37 @@ class Portfolio:
     cash: float
     stocks: float
     bonds: deque[(float, float)]  # (rate, holdings)
+    loans: list[[float, float]]  # (-rate, remaining) heap
 
     def __init__(self):
         self.cash = 0
         self.stocks = 0
         self.bonds = deque(maxlen=10)  # 10-year bonds, must re-buy
+        self.loans = []
 
     def bonds_value(self):
         return sum(x[1] for x in self.bonds)
 
-    def value(self):
+    def all_savings_value(self):
         return self.cash + self.stocks + self.bonds_value()
+
+    def loans_value(self):
+        return -sum(x[1] for x in self.loans)
+
+    def net_worth(self):
+        return self.all_savings_value() + self.loans_value()
 
     def balance(self, cash_comp, stocks_comp, bonds_comp, bonds_rate):
         # Determine target amounts
-        total_value = self.value()
-        assert total_value >= 0
+        total_value = self.all_savings_value()
+
+        # Liquidate if holdings go to 0
+        if total_value < 0:
+            self.cash = 0
+            self.stocks = 0
+            self.bonds = deque(maxlen=10)
+            return
+
         cash_target = cash_comp * total_value
         stocks_target = stocks_comp * total_value
         bonds_target = bonds_comp * total_value
@@ -97,12 +113,18 @@ class Portfolio:
 
     def simulate_growth(self, stocks_rate):
         self.stocks *= (1 + stocks_rate)
+
         for _ in range(len(self.bonds)):
             bond_rate, bond_value = self.bonds.popleft()
             self.bonds.append((bond_rate, bond_value * (1 + bond_rate)))
 
+        for loan in self.loans:
+            loan_rate, loan_debt = loan
+            loan[1] += loan_debt * (-loan_rate)
 
-def simulate_life(stocks_historical, bonds_historical, savings, _i, num_years, sample=True):
+
+def simulate_life(stocks_historical, bonds_historical, savings, loans, expenses, _i, num_years, sample=True):
+    expenses = deque(sorted(expenses))
     stocks_rate_sum = 0
     bonds_rate_sum = 0
 
@@ -122,6 +144,24 @@ def simulate_life(stocks_historical, bonds_historical, savings, _i, num_years, s
 
         stocks_rate_sum += stocks_rate
         bonds_rate_sum += bonds_rate
+
+        # Make purchases if there is an expense:
+        while expenses and (expenses[0][0] - 20) <= yr:
+            age, immediate, debt, loan_rate = expenses.popleft()
+            p.cash -= immediate
+            heapq.heappush(p.loans, [-loan_rate, debt])
+
+        # Pay off the most expensive loans
+        loan_budget = loans[year]
+        while p.loans and loan_budget > 0:
+            loan_payment = min(loan_budget, p.loans[0][1])
+            loan_budget -= loan_payment
+            p.loans[0][1] -= loan_payment
+            if p.loans[0][1] <= 0.01:
+                heapq.heappop(p.loans)
+
+        # Put remaining loan budget into savings
+        p.cash += loan_budget
 
         # Sell bonds if expired (sell before re-balancing)
         if len(p.bonds) == p.bonds.maxlen:
@@ -144,16 +184,16 @@ def simulate_life(stocks_historical, bonds_historical, savings, _i, num_years, s
     # Calculate year-end balances
     for year in range(num_years):
         simulate_year(portfolio, year)
-        timeline.append(portfolio.value())
+        timeline.append(portfolio.net_worth())
 
     return timeline, stocks_rate_sum, bonds_rate_sum
 
 
-def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], start_year, num_sims=3):
+def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], loans, expenses, start_year, num_sims=3):
     _i = investments  # name is too long
     last_n = 2022 - start_year
     assert 1928 < start_year < 2022
-    assert len(set(len(x) for x in (_i['cash'], _i['stocks'], _i['bonds'], savings))) == 1
+    assert len(set(len(x) for x in (_i['cash'], _i['stocks'], _i['bonds'], savings, loans))) == 1
     num_years = len(_i['cash'])
     for i in range(num_years):
         ASSERT_DOUBLE_EQ(_i['cash'][i] + _i['stocks'][i] + _i['bonds'][i], 1)
@@ -168,8 +208,10 @@ def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], s
 
     # Simulate in threads
     with Pool(NUM_THREADS) as p:
-        jobs = [p.apply_async(simulate_life, (stocks_historical, bonds_historical, savings, _i, num_years)) for _ in
-                range(num_sims)]
+        jobs = [
+            p.apply_async(simulate_life, (stocks_historical, bonds_historical, savings, loans, expenses, _i, num_years))
+            for _ in
+            range(num_sims)]
         sim_results = []
         for job in jobs:
             timeline, stocks_rate_sub_sum, bonds_rate_sub_sum = job.get()
@@ -192,10 +234,10 @@ def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], s
     }
 
 
-def backtest_sim(investments: dict[str, list[float]], savings: list[float], start_year: int):
+def backtest_sim(investments: dict[str, list[float]], savings: list[float], loans, expenses, start_year: int):
     _i = investments  # name is too long
     assert 1928 < start_year < 2022
-    assert len(set(len(x) for x in (_i['cash'], _i['stocks'], _i['bonds'], savings))) == 1
+    assert len(set(len(x) for x in (_i['cash'], _i['stocks'], _i['bonds'], savings, loans))) == 1
     num_years = min(len(_i['cash']), 2022 - start_year)
     for i in range(num_years):
         ASSERT_DOUBLE_EQ(_i['cash'][i] + _i['stocks'][i] + _i['bonds'][i], 1)
@@ -205,8 +247,8 @@ def backtest_sim(investments: dict[str, list[float]], savings: list[float], star
     bonds_historical = [x[1] for x in BONDS_HISTORICAL if start_year <= x[0]]
 
     # Do one simulation using real data
-    timeline, stocks_rate_sum, bonds_rate_sum = simulate_life(stocks_historical, bonds_historical, savings, _i,
-                                                              num_years, sample=False)
+    timeline, stocks_rate_sum, bonds_rate_sum = simulate_life(stocks_historical, bonds_historical, savings, loans,
+                                                              expenses, _i, num_years, sample=False)
 
     return {
         'time_series': {
@@ -222,6 +264,9 @@ if __name__ == '__main__':
     STOCKS = [0.6] * 40
     BONDS = [0.3] * 40
     SAVINGS = [5000] * 40
+    LOANS = [5000] * 40
+
+    EXPENSES = [(20, 10000, 90000, 0.037), (25, 8000, 22000, 0.044), (32, 80000, 320000, 0.073)]
 
     # Number of years of history to use for calculations
     START_YEAR = 1957
@@ -230,7 +275,7 @@ if __name__ == '__main__':
         'cash': CASH,
         'stocks': STOCKS,
         'bonds': BONDS,
-    }, SAVINGS, START_YEAR, num_sims=5000)
+    }, SAVINGS, LOANS, EXPENSES, START_YEAR, num_sims=5000)
 
     # print(json.dumps(monte_carlo_results, indent=2))
 
@@ -238,6 +283,6 @@ if __name__ == '__main__':
         'cash': CASH,
         'stocks': STOCKS,
         'bonds': BONDS,
-    }, SAVINGS, START_YEAR)
+    }, SAVINGS, LOANS, EXPENSES, START_YEAR)
 
     print(json.dumps(backtest_results, indent=2))

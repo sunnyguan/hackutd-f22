@@ -68,8 +68,8 @@ export default function Budget({update}) {
         label: 'Rent',
         yAxisID: 'y',
         data: investment1,
-        backgroundColor: "salmon",
-        borderColor: "red",
+        backgroundColor: "rgba(240, 209, 222, 0.25)",
+        borderColor: "rgb(240, 209, 222)",
         order: 4,
         tension: 0.2,
         ...POINT_PROPS,
@@ -77,8 +77,8 @@ export default function Budget({update}) {
         label: 'Food',
         yAxisID: 'y2',
         data: investment2,
-        backgroundColor: "lightgreen",
-        borderColor: "green",
+        backgroundColor: "rgba(220, 147, 178, 0.25)",
+        borderColor: "rgb(220, 147, 178)",
         order: 3,
         tension: 0.2,
         ...POINT_PROPS
@@ -87,8 +87,8 @@ export default function Budget({update}) {
         yAxisID: 'y3',
         tension: 0.2,
         data: investment3,
-        backgroundColor: "lightblue",
-        borderColor: "blue",
+        backgroundColor: "rgba(200, 86, 133, 0.25)",
+        borderColor: "rgb(200, 86, 133)",
         order: 2,
         ...POINT_PROPS
       }, {
@@ -96,8 +96,8 @@ export default function Budget({update}) {
         yAxisID: 'y4',
         tension: 0.2,
         data: investment4,
-        backgroundColor: "purple",
-        borderColor: "black",
+        backgroundColor: "rgba(172, 53, 104, 0.25)",
+        borderColor: "rgb(172, 53, 104)",
         order: 1,
         ...POINT_PROPS
       }]

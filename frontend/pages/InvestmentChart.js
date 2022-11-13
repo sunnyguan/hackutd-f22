@@ -13,6 +13,7 @@ export default function InvestmentChart({bump}) {
   const [netWorthLow, setNetWorthLow] = useState([]);
   const [netWorthHigh, setNetWorthHigh] = useState([]);
   const [maxRange, setMaxRange] = useState(200000);
+  const [minRange, setMinRange] = useState(0);
   const [startYearModalOpen, setStartYearModalOpen] = useState(false);
   const [startYear, setStartYear] = useState(1960);
   const [simSelected, setSimSelected] = useState(true);
@@ -111,8 +112,17 @@ export default function InvestmentChart({bump}) {
             "Content-Type": "application/json"
         },
         body: JSON.stringify(info)
-    }).then(res => res.json()).then(data => {
+    }).then(async res => {
+      if (res.status === 200)
+        return res.json();
+      else if (res.status === 422) {
+        const data = await res.json()
+        console.log(data);
+        alert("Backend failure: " + data.text);
+      }
+    }).then(data => {
       let mx = 0;
+      let mn = 0;
       if (method === 'monte-carlo') {
         let temp = [];
         for (let i = 20; i <= 100; i++)
@@ -128,15 +138,18 @@ export default function InvestmentChart({bump}) {
         for (let i = 20; i <= 100; i++) {
           temp.push({x: i, y: data.time_series.high[i - 20]});
           mx = Math.max(mx, data.time_series.high[i - 20]);
+          mn = Math.min(mn, data.time_series.high[i - 20]);
         }
         setNetWorthHigh(temp);
         setMaxRange(mx * 1.1);
+        setMinRange(mn - 1000);
       } else {
         let temp = [];
         for (let i = 20; i < 20 + data.time_series.net_worth.length; i++) {
           let val = data.time_series.net_worth[i - 20];
           if (!isNaN(val)) {
             mx = Math.max(mx, val);
+            mn = Math.min(mn, val);
             temp.push({x: i, y: val});
           }
         }
@@ -144,6 +157,7 @@ export default function InvestmentChart({bump}) {
         setNetWorthLow([])
         setNetWorthHigh([])
         setMaxRange(mx * 1.1);
+        setMinRange(mn - 1000);
       }
     }).catch(err => {
       console.log(err)
@@ -183,8 +197,8 @@ export default function InvestmentChart({bump}) {
         yAxisID: 'y1',
         dragData: false,
         data: netWorth,
-        backgroundColor: "lightgreen",
-        borderColor: "green",
+        backgroundColor: "rgba(10, 173, 255, 0.25)",
+        borderColor: "rgb(10, 173, 255)",
         order: 2,
         ...POINT_PROPS,
       }, {
@@ -192,8 +206,8 @@ export default function InvestmentChart({bump}) {
         yAxisID: 'y2',
         dragData: false,
         data: netWorthLow,
-        backgroundColor: "lightblue",
-        borderColor: "blue",
+        backgroundColor: "rgba(0, 68, 102, 0.25)",
+        borderColor: "rgb(0, 68, 102)",
         order: 1,
         ...POINT_PROPS,
       }, {
@@ -201,8 +215,8 @@ export default function InvestmentChart({bump}) {
         yAxisID: 'y3',
         dragData: false,
         data: netWorthHigh,
-        backgroundColor: "salmon",
-        borderColor: "red",
+        backgroundColor: "rgba(173, 228, 255, 0.25)",
+        borderColor: "rgb(173, 228, 255)",
         order: 3,
         ...POINT_PROPS,
       }]
@@ -212,7 +226,7 @@ export default function InvestmentChart({bump}) {
         y1: {
           type: 'linear',
           max: maxRange,
-          min: 0,
+          min: minRange,
           ticks: {
             color: 'white'
           }
@@ -220,7 +234,7 @@ export default function InvestmentChart({bump}) {
         y2: {
           type: 'linear',
           max: maxRange,
-          min: 0,
+          min: minRange,
           display: false,
           ticks: {
             color: 'white'
@@ -229,7 +243,7 @@ export default function InvestmentChart({bump}) {
         y3: {
           type: 'linear',
           max: maxRange,
-          min: 0,
+          min: minRange,
           display: false,
           ticks: {
             color: 'white'
