@@ -19,9 +19,9 @@ export default function Budget({update}) {
   }
 
   useEffect(() => {
-        setInvestment1(JSON.parse(localStorage.getItem('budget-0')) || [
-          {x: 20, y: 28000}, {x: 100, y: 30000}
-        ]);
+    setInvestment1(JSON.parse(localStorage.getItem('budget-0')) || [
+      {x: 20, y: 28000}, {x: 100, y: 30000}
+    ]);
     setInvestment2(
         JSON.parse(localStorage.getItem('budget-1')) || [
           {x: 20, y: 25000}, {x: 100, y: 20000}
