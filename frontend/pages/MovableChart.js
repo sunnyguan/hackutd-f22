@@ -33,7 +33,7 @@ export default function MovableChart({update}) {
   }, []);
 
   const POINT_PROPS = {
-    pointHitRadius: 25,
+    pointHitRadius: 10,
     pointRadius: 5,
     pointHoverRadius: 10,
     fill: true,
@@ -192,6 +192,30 @@ export default function MovableChart({update}) {
             font: {
               size: 18 
             }
+          }
+        },
+        tooltip: {
+          mode: 'x',
+          itemSort: (a, b) => {
+            return a.datasetIndex - b.datasetIndex;
+          },
+          callbacks: {
+            label: (context) => {
+              let label = context.dataset.label || '';
+
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                // Determine what the point directly underneath this is, if any
+                const datasets = chartRef.current.data.datasets;
+                const indexBelow = context.datasetIndex + 1;
+                const yDiff = context.parsed.y - (indexBelow < datasets.length ? datasets[indexBelow].data[context.dataIndex].y : 0);
+                label += Math.round((yDiff + Number.EPSILON) * 100) / 100
+                label += '%';
+              }
+              return label;
+            },
           }
         }
       },
