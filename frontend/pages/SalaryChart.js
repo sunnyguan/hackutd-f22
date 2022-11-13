@@ -2,27 +2,17 @@ import { Chart as ChartJS } from 'chart.js/auto'
 import { Chart }            from 'react-chartjs-2'
 import {useEffect, useRef, useState} from "react";
 import 'chartjs-plugin-dragdata'
+import {DEFAULTS, getOrDefault} from "./Defaults";
 
 export default function SalaryChart({update}) {
 
   const chartRef = useRef(null);
 
   const [salaryData, setSalaryData] = useState([
-            {
-              x: 20, y: 50000
-            },
-            {
-              x: 100, y: 500000
-            }]);
+            DEFAULTS['salary']]);
 
   useEffect(() => {
-    setSalaryData(JSON.parse(localStorage.getItem('salary')) || [
-            {
-              x: 20, y: 50000
-            },
-            {
-              x: 100, y: 500000
-            }]);
+    setSalaryData(getOrDefault('salary'));
   }, []);
 
   const POINT_PROPS = {

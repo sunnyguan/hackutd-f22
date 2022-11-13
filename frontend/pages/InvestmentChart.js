@@ -5,6 +5,7 @@ import 'chartjs-plugin-dragdata'
 import Slider from "rc-slider";
 import 'rc-slider/assets/index.css';
 import * as yearVis from '../years.json';
+import {getOrDefault} from "./Defaults";
 
 export default function InvestmentChart({bump}) {
 
@@ -50,34 +51,12 @@ export default function InvestmentChart({bump}) {
   }
 
   function loadNetWorth() {
-    const cash = JSON.parse(localStorage.getItem('investments-0')) || [
-            {
-              x: 20, y: 100
-            },
-            {
-              x: 100, y: 100
-            }
-        ];
-    const bonds = JSON.parse(localStorage.getItem('investments-1')) || [
-            {x: 20, y: 75}, {x: 100, y: 75}
-        ];
-    const stocks = JSON.parse(localStorage.getItem('investments-2')) || [
-      {x: 20, y: 25}, {x: 100, y: 25}
-    ];
-    const savings = JSON.parse(localStorage.getItem('salary')) || [
-            {
-              x: 20, y: 50000
-            },
-            {
-              x: 100, y: 500000
-            }
-        ];
-    const budget = JSON.parse(localStorage.getItem('budget-0')) || [
-      {x: 20, y: 28000}, {x: 100, y: 30000}
-    ];
-    const loans = JSON.parse(localStorage.getItem('budget-3')) || [
-        {x: 20, y: 5000}, {x: 100, y: 3000}
-    ];
+    const cash = getOrDefault('investments-0');
+    const bonds = getOrDefault('investments-1');
+    const stocks = getOrDefault('investments-2');
+    const savings = getOrDefault('salary');
+    const budget = getOrDefault('budget-0');
+    const loans = getOrDefault('budget-3');
 
     let info = {
       "time_series": {

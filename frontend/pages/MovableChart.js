@@ -2,6 +2,7 @@ import { Chart as ChartJS } from 'chart.js/auto';
 import { Chart }            from 'react-chartjs-2';
 import {useEffect, useRef, useState} from "react";
 import 'chartjs-plugin-dragdata';
+import {getOrDefault} from "./Defaults";
 
 export default function MovableChart({update}) {
 
@@ -17,17 +18,9 @@ export default function MovableChart({update}) {
   }
 
   useEffect(() => {
-        setInvestment1(JSON.parse(localStorage.getItem('investments-0')) || [
-          {x: 20, y: 100}, {x: 100, y: 100}
-        ]);
-    setInvestment2(
-        JSON.parse(localStorage.getItem('investments-1')) || [
-          {x: 20, y: 75}, {x: 100, y: 75}
-        ]);
-    setInvestment3(
-        JSON.parse(localStorage.getItem('investments-2')) || [
-          {x: 20, y: 50}, {x: 100, y: 50}
-        ]);
+    setInvestment1(getOrDefault('investments-0'));
+    setInvestment2(getOrDefault('investments-1'));
+    setInvestment3(getOrDefault('investments-2'));
     // save(chartRef.current.data.datasets);
     chartRef.current.update();
   }, []);

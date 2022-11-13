@@ -2,6 +2,7 @@ import { Chart as ChartJS } from 'chart.js/auto';
 import { Chart }            from 'react-chartjs-2';
 import {useEffect, useRef, useState} from "react";
 import 'chartjs-plugin-dragdata';
+import {getOrDefault} from "./Defaults";
 
 export default function Budget({update}) {
 
@@ -19,21 +20,10 @@ export default function Budget({update}) {
   }
 
   useEffect(() => {
-    setInvestment1(JSON.parse(localStorage.getItem('budget-0')) || [
-      {x: 20, y: 28000}, {x: 100, y: 30000}
-    ]);
-    setInvestment2(
-        JSON.parse(localStorage.getItem('budget-1')) || [
-          {x: 20, y: 25000}, {x: 100, y: 20000}
-        ]);
-    setInvestment3(
-        JSON.parse(localStorage.getItem('budget-2')) || [
-          {x: 20, y: 10000}, {x: 100, y: 8000}
-        ]);
-    setInvestment4(
-        JSON.parse(localStorage.getItem('budget-3')) || [
-          {x: 20, y: 5000}, {x: 100, y: 3000}
-        ]);
+    setInvestment1(getOrDefault('budget-0'));
+    setInvestment2(getOrDefault('budget-1'));
+    setInvestment3(getOrDefault('budget-2'));
+    setInvestment4(getOrDefault('budget-3'));
     // save(chartRef.current.data.datasets);
     chartRef.current.update();
   }, []);
