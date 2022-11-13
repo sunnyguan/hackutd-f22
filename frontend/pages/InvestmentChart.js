@@ -131,8 +131,8 @@ export default function InvestmentChart({id}) {
 
   const POINT_PROPS = {
     pointHitRadius: 5,
-    pointRadius: 5,
-    pointHoverRadius: 10,
+    pointRadius: 0,
+    pointHoverRadius: 5,
     fill: true,
     showLine: true
   }
