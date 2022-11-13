@@ -3,6 +3,7 @@ import MovableChart from "./MovableChart";
 import SalaryChart from "./SalaryChart";
 import {useState} from "react";
 import Budget from "./Budget";
+import MiscItems from "./MiscItems";
 
 export default function Dashboard () {
 
@@ -17,10 +18,11 @@ export default function Dashboard () {
         <div className={"flex-1"}>
           <InvestmentChart bump={id}/>
         </div>
-        <div className={"grid grid-cols-3 divide-x text-center"}>
+        <div className={"grid grid-cols-4 divide-x text-center"}>
           <MovableChart update={update}/>
           <SalaryChart update={update}/>
           <Budget update={update}/>
+          <MiscItems />
         </div>
       </div>
   )

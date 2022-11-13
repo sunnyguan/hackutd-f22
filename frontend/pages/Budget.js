@@ -9,11 +9,13 @@ export default function Budget({update}) {
   const [investment1, setInvestment1] = useState([]);
   const [investment2, setInvestment2] = useState([]);
   const [investment3, setInvestment3] = useState([]);
+  const [investment4, setInvestment4] = useState([]);
 
   function save(datasets) {
     localStorage.setItem('budget-0', JSON.stringify(datasets[0].data));
     localStorage.setItem('budget-1', JSON.stringify(datasets[1].data));
     localStorage.setItem('budget-2', JSON.stringify(datasets[2].data));
+    localStorage.setItem('budget-3', JSON.stringify(datasets[3].data));
   }
 
   useEffect(() => {
@@ -27,6 +29,10 @@ export default function Budget({update}) {
     setInvestment3(
         JSON.parse(localStorage.getItem('budget-2')) || [
           {x: 20, y: 10000}, {x: 100, y: 8000}
+        ]);
+    setInvestment4(
+        JSON.parse(localStorage.getItem('budget-3')) || [
+          {x: 20, y: 5000}, {x: 100, y: 3000}
         ]);
     // save(chartRef.current.data.datasets);
     chartRef.current.update();
@@ -64,7 +70,7 @@ export default function Budget({update}) {
         data: investment1,
         backgroundColor: "salmon",
         borderColor: "red",
-        order: 2,
+        order: 4,
         tension: 0.2,
         ...POINT_PROPS,
       }, {
@@ -73,7 +79,7 @@ export default function Budget({update}) {
         data: investment2,
         backgroundColor: "lightgreen",
         borderColor: "green",
-        order: 1,
+        order: 3,
         tension: 0.2,
         ...POINT_PROPS
       }, {
@@ -83,7 +89,16 @@ export default function Budget({update}) {
         data: investment3,
         backgroundColor: "lightblue",
         borderColor: "blue",
-        order: 0,
+        order: 2,
+        ...POINT_PROPS
+      }, {
+        label: 'Loans',
+        yAxisID: 'y4',
+        tension: 0.2,
+        data: investment4,
+        backgroundColor: "purple",
+        borderColor: "black",
+        order: 1,
         ...POINT_PROPS
       }]
     },
@@ -111,6 +126,14 @@ export default function Budget({update}) {
           }
         },
         y3: {
+          type: 'linear',
+          max: 100000,
+          min: 0,
+          ticks: {
+            color: 'white'
+          }
+        },
+        y4: {
           type: 'linear',
           max: 100000,
           min: 0,

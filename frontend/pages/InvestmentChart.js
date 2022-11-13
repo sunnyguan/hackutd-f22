@@ -21,24 +21,24 @@ export default function InvestmentChart({bump}) {
   //   TEST["time_series"]["savings"].push(5000);
   // }
 
-  function calculate(values) {
+  function calculate(values, div) {
     let res = [];
     for (let i = 0; i < values.length - 1; i++) {
       for (let j = values[i].x; j < values[i + 1].x; j++) {
         let newy = (values[i + 1].y - values[i].y) / (values[i + 1].x - values[i].x) * (j - values[i].x) + values[i].y;
-        res.push(newy / 100)
+        res.push(newy / div);
       }
     }
-    res.push(values[values.length - 1].y / 100);
+    res.push(values[values.length - 1].y / div);
     return res;
   }
 
   function diff(values1, values2) {
-    let res1 = calculate(values1);
-    let res2 = calculate(values2);
+    let res1 = calculate(values1, 1);
+    let res2 = calculate(values2, 1);
     let res = [];
     for (let i = 0; i < res1.length; i++) {
-      res.push((res1[i] - res2[i]) * 100);
+      res.push(res1[i] - res2[i]);
     }
     console.log(res);
     return res;
@@ -70,17 +70,23 @@ export default function InvestmentChart({bump}) {
     const budget = JSON.parse(localStorage.getItem('budget-0')) || [
       {x: 20, y: 28000}, {x: 100, y: 30000}
     ];
+    const loans = JSON.parse(localStorage.getItem('budget-3')) || [
+        {x: 20, y: 5000}, {x: 100, y: 3000}
+    ];
 
     let info = {
       "time_series": {
-        "cash": calculate(cash),
-        "stocks": calculate(stocks),
-        "bonds": calculate(bonds),
+        "cash": calculate(cash, 100),
+        "stocks": calculate(stocks, 100),
+        "bonds": calculate(bonds, 100),
         "savings": diff(savings, budget),
+        "loans": calculate(loans, 1),
       },
       "start_year": parseInt(startYear),
       "num_sims": 1000
     };
+
+    console.log(info)
 
     const length = info["time_series"]["cash"].length;
 
@@ -136,7 +142,7 @@ export default function InvestmentChart({bump}) {
         setMaxRange(mx * 1.1);
       }
     }).catch(err => {
-      alert(err)
+      console.log(err)
     });
   }
 
