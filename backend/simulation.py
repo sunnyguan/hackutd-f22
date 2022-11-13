@@ -133,9 +133,10 @@ def simulate_life(stocks_historical, bonds_historical, savings, _i, num_years):
     return timeline, stocks_rate_sum, bonds_rate_sum
 
 
-def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], last_n=None, num_sims=3):
+def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], start_year, num_sims=3):
     _i = investments  # name is too long
-    assert last_n < 90
+    last_n = 2022 - start_year
+    assert 0 < last_n < 90
     assert len(set(len(x) for x in (_i['cash'], _i['stocks'], _i['bonds'], savings))) == 1
     num_years = len(_i['cash'])
     assert all(_i['cash'][i] + _i['stocks'][i] + _i['bonds'][i] == 1 for i in range(num_years))

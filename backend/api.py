@@ -23,9 +23,9 @@ def compute_returns_():
         'bonds': j['time_series']['bonds'],
     }
     savings = j['time_series']['savings']
-    last_n = j['last_n']
+    start_year = j['start_year']
     num_sims = min(10000, max(100, j['num_sims']))
 
-    monte_carlo_results = monte_carlo_sim(investments, savings, last_n, num_sims)
+    monte_carlo_results = monte_carlo_sim(investments, savings, start_year, num_sims)
 
     return make_response(monte_carlo_results, 200)
