@@ -15,7 +15,7 @@ export default function InvestmentChart({bump}) {
   const [maxRange, setMaxRange] = useState(200000);
   const [minRange, setMinRange] = useState(0);
   const [startYearModalOpen, setStartYearModalOpen] = useState(false);
-  const [startYear, setStartYear] = useState(1960);
+  const [startYear, setStartYear] = useState(2000);
   const [simSelected, setSimSelected] = useState(true);
   const [sliderYear, setSliderYear] = useState(1950);
 
