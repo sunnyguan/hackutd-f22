@@ -2,8 +2,6 @@ import { Chart as ChartJS } from 'chart.js/auto'
 import { Chart }            from 'react-chartjs-2'
 import {useEffect, useRef, useState} from "react";
 import 'chartjs-plugin-dragdata'
-import MovableChart from "./MovableChart";
-import SalaryChart from "./SalaryChart";
 
 export default function InvestmentChart({bump}) {
 
@@ -15,7 +13,7 @@ export default function InvestmentChart({bump}) {
   const [startYearModalOpen, setStartYearModalOpen] = useState(false);
   const [startYear, setStartYear] = useState(1960);
   const [simSelected, setSimSelected] = useState(true);
-
+  const [backtestStart, setBacktestStart] = useState(2000);
 
   // for (let i = 0; i < 101; i++) {
   //   TEST["time_series"]["cash"].push(0.8);
@@ -81,7 +79,7 @@ export default function InvestmentChart({bump}) {
         "bonds": calculate(bonds),
         "savings": diff(savings, budget),
       },
-      "start_year": 1957,
+      "start_year": parseInt(startYear),
       "num_sims": 1000
     };
 
@@ -244,6 +242,10 @@ export default function InvestmentChart({bump}) {
     loadNetWorth();
   }
 
+  function handleChange (e) {
+    e.preventDefault()
+    setBacktestStart(e.target.value);
+  }
   return (
     <>
       <div id="popup-modal" tabIndex="-1" style={{display: startYearModalOpen ? 'block' : 'none'}}
@@ -266,8 +268,14 @@ export default function InvestmentChart({bump}) {
               </svg>
               <span className="sr-only">Close modal</span>
             </button>
-            <div className="p-6 text-center">
-              hello world
+            <div className="p-6 text-center text-black">
+              <input type={"text"} value={backtestStart} onChange={handleChange} />
+              <br />
+              <button className={"text-white mt-2"} onClick={(e) => {
+                setStartYearModalOpen(false)
+                setStartYear(backtestStart);
+                update()
+              }}>Submit</button>
             </div>
           </div>
         </div>
