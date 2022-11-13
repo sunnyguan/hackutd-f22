@@ -100,11 +100,11 @@ export default function LandingPage({signUpDone}) {
                     visibleItem === 'signup' &&
                     <div className="my-8 block rounded-lg shadow-lg bg-white max-w-sm text-center text-black h-5/6 w-3/6">
                         <h2 className="font-bold my-8">Let's Get Started!</h2>
-                        <form className="my-8">
+                        <form className="m-4">
                             {
                                 signupFields.map(field=>
-                                    <div key={field.id}>
-                                    <h2 className="my-8">
+                                    <div key={field.id} className={"my-4 mx-4"}>
+                                    <h2 className="font-bold text-left text-xl mb-2">
                                         {field.placeholder}
                                     </h2>
                                     <Input
@@ -123,7 +123,7 @@ export default function LandingPage({signUpDone}) {
                             }
                         </form>
                         <button 
-                            className='mb-8 text-base bg-white hover:bg-gray-400 text-gray-800 font-semibold py-4 px-7 border border-gray-300 rounded shadow hover:shadow-lg'
+                            className='mb-8 text-base bg-white hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded shadow hover:shadow-lg'
                             onClick={e => {
                                 signUpDone({
                                     "name": "Nhi"

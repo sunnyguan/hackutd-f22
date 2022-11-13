@@ -10,12 +10,12 @@ export default function Input({
     placeholder,
 }){
     return(
-        <div className="my-5">
+        <div className="">
             <label htmlFor={labelFor} className="sr-only">
               {labelText}
             </label>
             <input
-                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="w-full shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-lg"
                 onChange={handleChange}
                 value={value}
                 id={id}
