@@ -1,14 +1,12 @@
-import { Chart as ChartJS } from 'chart.js/auto'
-import { Bar, Chart }            from 'react-chartjs-2'
-import {useEffect, useRef, useState} from "react";
-import 'chartjs-plugin-dragdata'
+import { Bar, Chart } from "react-chartjs-2";
+import { useEffect, useRef, useState } from "react";
+import "chartjs-plugin-dragdata";
 import Slider from "rc-slider";
-import 'rc-slider/assets/index.css';
-import * as yearVis from '../years.json';
-import {getOrDefault} from "./Defaults";
+import "rc-slider/assets/index.css";
+import * as yearVis from "../years.json";
+import { getOrDefault } from "./Defaults";
 
-export default function InvestmentChart({bump}) {
-
+export default function InvestmentChart({ bump }) {
   const chartRef = useRef(null);
   const [netWorth, setNetWorth] = useState([]);
   const [netWorthLow, setNetWorthLow] = useState([]);
@@ -31,7 +29,10 @@ export default function InvestmentChart({bump}) {
     let res = [];
     for (let i = 0; i < values.length - 1; i++) {
       for (let j = values[i].x; j < values[i + 1].x; j++) {
-        let newy = (values[i + 1].y - values[i].y) / (values[i + 1].x - values[i].x) * (j - values[i].x) + values[i].y;
+        let newy =
+          ((values[i + 1].y - values[i].y) / (values[i + 1].x - values[i].x)) *
+            (j - values[i].x) +
+          values[i].y;
         res.push(newy / div);
       }
     }
@@ -51,26 +52,26 @@ export default function InvestmentChart({bump}) {
   }
 
   function loadNetWorth() {
-    const cash = getOrDefault('investments-0');
-    const bonds = getOrDefault('investments-1');
-    const stocks = getOrDefault('investments-2');
-    const savings = getOrDefault('salary');
-    const budget = getOrDefault('budget-0');
-    const loans = getOrDefault('budget-3');
+    const cash = getOrDefault("investments-0");
+    const bonds = getOrDefault("investments-1");
+    const stocks = getOrDefault("investments-2");
+    const savings = getOrDefault("salary");
+    const budget = getOrDefault("budget-0");
+    const loans = getOrDefault("budget-3");
 
     let info = {
-      "time_series": {
-        "cash": calculate(cash, 100),
-        "stocks": calculate(stocks, 100),
-        "bonds": calculate(bonds, 100),
-        "savings": diff(savings, budget),
-        "loans": calculate(loans, 1),
+      time_series: {
+        cash: calculate(cash, 100),
+        stocks: calculate(stocks, 100),
+        bonds: calculate(bonds, 100),
+        savings: diff(savings, budget),
+        loans: calculate(loans, 1),
       },
-      "start_year": parseInt(startYear),
-      "num_sims": 1000
+      start_year: parseInt(startYear),
+      num_sims: 1000,
     };
 
-    console.log(info)
+    console.log(info);
 
     const length = info["time_series"]["cash"].length;
 
@@ -80,67 +81,73 @@ export default function InvestmentChart({bump}) {
     }
 
     for (let i = 0; i < length; i++) {
-      console.log(info["time_series"]["cash"][i] + info["time_series"]["bonds"][i] + info["time_series"]["stocks"][i] );
+      console.log(
+        info["time_series"]["cash"][i] +
+          info["time_series"]["bonds"][i] +
+          info["time_series"]["stocks"][i]
+      );
     }
 
-    console.log(info)
-    const method = simSelected ? 'monte-carlo' : 'backtest';
+    console.log(info);
+    const method = simSelected ? "monte-carlo" : "backtest";
     fetch(`http://127.0.0.1:5000/compute-${method}`, {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(info)
-    }).then(async res => {
-      if (res.status === 200)
-        return res.json();
-      else if (res.status === 422) {
-        const data = await res.json()
-        console.log(data);
-        alert("Backend failure: " + data.text);
-      }
-    }).then(data => {
-      let mx = 0;
-      let mn = 0;
-      if (method === 'monte-carlo') {
-        let temp = [];
-        for (let i = 20; i <= 100; i++)
-          temp.push({x: i, y: data.time_series.mid[i - 20]});
-        setNetWorth(temp);
-
-        temp = [];
-        for (let i = 20; i <= 100; i++)
-          temp.push({x: i, y: data.time_series.low[i - 20]});
-        setNetWorthLow(temp);
-
-        temp = [];
-        for (let i = 20; i <= 100; i++) {
-          temp.push({x: i, y: data.time_series.high[i - 20]});
-          mx = Math.max(mx, data.time_series.high[i - 20]);
-          mn = Math.min(mn, data.time_series.high[i - 20]);
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(info),
+    })
+      .then(async (res) => {
+        if (res.status === 200) return res.json();
+        else if (res.status === 422) {
+          const data = await res.json();
+          console.log(data);
+          alert("Backend failure: " + data.text);
         }
-        setNetWorthHigh(temp);
-        setMaxRange(mx * 1.1);
-        setMinRange(mn - 1000);
-      } else {
-        let temp = [];
-        for (let i = 20; i < 20 + data.time_series.net_worth.length; i++) {
-          let val = data.time_series.net_worth[i - 20];
-          if (!isNaN(val)) {
-            mx = Math.max(mx, val);
-            mn = Math.min(mn, val);
-            temp.push({x: i, y: val});
+      })
+      .then((data) => {
+        let mx = 0;
+        let mn = 0;
+        if (method === "monte-carlo") {
+          let temp = [];
+          for (let i = 20; i <= 100; i++)
+            temp.push({ x: i, y: data.time_series.mid[i - 20] });
+          setNetWorth(temp);
+
+          temp = [];
+          for (let i = 20; i <= 100; i++)
+            temp.push({ x: i, y: data.time_series.low[i - 20] });
+          setNetWorthLow(temp);
+
+          temp = [];
+          for (let i = 20; i <= 100; i++) {
+            temp.push({ x: i, y: data.time_series.high[i - 20] });
+            mx = Math.max(mx, data.time_series.high[i - 20]);
+            mn = Math.min(mn, data.time_series.high[i - 20]);
           }
+          setNetWorthHigh(temp);
+          setMaxRange(mx * 1.1);
+          setMinRange(mn - 1000);
+        } else {
+          let temp = [];
+          for (let i = 20; i < 20 + data.time_series.net_worth.length; i++) {
+            let val = data.time_series.net_worth[i - 20];
+            if (!isNaN(val)) {
+              mx = Math.max(mx, val);
+              mn = Math.min(mn, val);
+              temp.push({ x: i, y: val });
+            }
+          }
+          setNetWorth(temp);
+          setNetWorthLow([]);
+          setNetWorthHigh([]);
+          setMaxRange(mx * 1.1);
+          setMinRange(mn - 1000);
         }
-        setNetWorth(temp);
-        setNetWorthLow([])
-        setNetWorthHigh([])
-        setMaxRange(mx * 1.1);
-        setMinRange(mn - 1000);
-      }
-    }).catch(err => {
-      console.log(err)
-    });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   useEffect(loadNetWorth, [bump, startYear, simSelected]);
@@ -150,101 +157,104 @@ export default function InvestmentChart({bump}) {
     pointRadius: 0,
     pointHoverRadius: 5,
     fill: true,
-    showLine: true
-  }
+    showLine: true,
+  };
 
   function pushPoint(dataset, x) {
     let index = 0;
     for (; index < dataset.length; index++) {
       if (dataset[index].x === x) return;
-      if (dataset[index].x > x)
-        break;
+      if (dataset[index].x > x) break;
     }
     let p1 = dataset[index - 1];
     let p2 = dataset[index];
 
-    let y = (x - p1.x) / (p2.x - p1.x) * (p2.y - p1.y) + p1.y;
+    let y = ((x - p1.x) / (p2.x - p1.x)) * (p2.y - p1.y) + p1.y;
 
-    dataset.splice(index, 0, {x: x, y: y});
+    dataset.splice(index, 0, { x: x, y: y });
   }
 
   let options = {
-    type: 'scatter',
+    type: "scatter",
     data: {
-      datasets: [{
-        label: 'Net Worth Mid',
-        yAxisID: 'y1',
-        dragData: false,
-        data: netWorth,
-        backgroundColor: "rgba(10, 173, 255, 0.25)",
-        borderColor: "rgb(10, 173, 255)",
-        order: 2,
-        ...POINT_PROPS,
-      }, {
-        label: 'Net Worth Low',
-        yAxisID: 'y2',
-        dragData: false,
-        data: netWorthLow,
-        backgroundColor: "rgba(0, 68, 102, 0.25)",
-        borderColor: "rgb(0, 68, 102)",
-        order: 1,
-        ...POINT_PROPS,
-      }, {
-        label: 'Net Worth High',
-        yAxisID: 'y3',
-        dragData: false,
-        data: netWorthHigh,
-        backgroundColor: "rgba(173, 228, 255, 0.25)",
-        borderColor: "rgb(173, 228, 255)",
-        order: 3,
-        ...POINT_PROPS,
-      }]
+      datasets: [
+        {
+          label: "Net Worth Mid",
+          yAxisID: "y1",
+          dragData: false,
+          data: netWorth,
+          backgroundColor: "rgba(10, 173, 255, 0.25)",
+          borderColor: "rgb(10, 173, 255)",
+          order: 2,
+          ...POINT_PROPS,
+        },
+        {
+          label: "Net Worth Low",
+          yAxisID: "y2",
+          dragData: false,
+          data: netWorthLow,
+          backgroundColor: "rgba(0, 68, 102, 0.25)",
+          borderColor: "rgb(0, 68, 102)",
+          order: 1,
+          ...POINT_PROPS,
+        },
+        {
+          label: "Net Worth High",
+          yAxisID: "y3",
+          dragData: false,
+          data: netWorthHigh,
+          backgroundColor: "rgba(173, 228, 255, 0.25)",
+          borderColor: "rgb(173, 228, 255)",
+          order: 3,
+          ...POINT_PROPS,
+        },
+      ],
     },
     options: {
       scales: {
         y1: {
-          type: 'linear',
+          type: "linear",
           max: maxRange,
           min: minRange,
           ticks: {
-            color: 'white'
-          }
+            color: "white",
+          },
         },
         y2: {
-          type: 'linear',
+          type: "linear",
           max: maxRange,
           min: minRange,
           display: false,
           ticks: {
-            color: 'white'
-          }
+            color: "white",
+          },
         },
         y3: {
-          type: 'linear',
+          type: "linear",
           max: maxRange,
           min: minRange,
           display: false,
           ticks: {
-            color: 'white'
-          }
+            color: "white",
+          },
         },
         x: {
           ticks: {
-            color: 'white'
-          }
-        }
+            color: "white",
+          },
+        },
       },
       plugins: {
         legend: {
           labels: {
-            color: "white",  
+            color: "white",
             font: {
-              size: 18 
-            }
-          }
+              size: 18,
+            },
+          },
         },
         tooltip: {
-          mode: 'x',
+          mode: "x",
           itemSort: (a, b) => {
             return a.datasetIndex - b.datasetIndex;
           },
@@ -255,47 +265,55 @@ export default function InvestmentChart({bump}) {
               return "Age: " + x;
             },
             label: (context) => {
-              let label = context.dataset.label || '';
+              let label = context.dataset.label || "";
 
               if (label) {
-                label += ': ';
+                label += ": ";
               }
               if (context.parsed.y !== null) {
-                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                label += new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(context.parsed.y);
               }
               return label;
             },
-          }
-        }
+          },
+        },
       },
-      onHover: function(e) {
-        const point = e.chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false)
-        if (point.length) e.native.target.style.cursor = 'grab'
-        else e.native.target.style.cursor = 'default'
+      onHover: function (e) {
+        const point = e.chart.getElementsAtEventForMode(
+          e,
+          "nearest",
+          { intersect: true },
+          false
+        );
+        if (point.length) e.native.target.style.cursor = "grab";
+        else e.native.target.style.cursor = "default";
       },
       responsive: true,
       maintainAspectRatio: false,
-    }
-  }
+    },
+  };
 
   function update() {
     loadNetWorth();
   }
 
-  function handleChange (e) {
-    e.preventDefault()
+  function handleChange(e) {
+    e.preventDefault();
     setStartYear(e.target.value);
   }
 
   const options2 = {
     pan: {
       enabled: true,
-      mode: "xy"
+      mode: "xy",
     },
     zoom: {
       enabled: true,
       drag: false,
-      mode: "xy"
+      mode: "xy",
     },
     scales: {
       x: {
@@ -305,21 +323,21 @@ export default function InvestmentChart({bump}) {
         type: "linear",
         offset: false,
         gridLines: {
-          offsetGridLines: false
+          offsetGridLines: false,
         },
         title: {
           display: true,
-          text: "Arrivals per minute"
+          text: "Arrivals per minute",
         },
         ticks: {
-          color: 'white'
-        }
+          color: "white",
+        },
       },
       y: {
         ticks: {
-          color: 'white'
-        }
-      }
+          color: "white",
+        },
+      },
     },
 
     plugins: {
@@ -331,78 +349,95 @@ export default function InvestmentChart({bump}) {
       },
       legend: {
         labels: {
-          color: "white",  
+          color: "white",
           font: {
-            size: 18 
-          }
-        }
+            size: 18,
+          },
+        },
       },
-    }
+    },
   };
 
   return (
     <>
-      <div id="popup-modal" tabIndex="-1" style={{display: startYearModalOpen ? 'block' : 'none'}}
-           className="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 md:inset-0 h-modal md:h-full">
-        <div className="relative p-4 w-full max-w-2xl h-full md:h-auto m-auto" style={{
-          top: "50%",
-          transform: "translateY(-50%)"
-        }}>
+      <div
+        id="popup-modal"
+        tabIndex="-1"
+        style={{ display: startYearModalOpen ? "block" : "none" }}
+        className="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 md:inset-0 h-modal md:h-full"
+      >
+        <div
+          className="relative p-4 w-full max-w-2xl h-full md:h-auto m-auto"
+          style={{
+            top: "50%",
+            transform: "translateY(-50%)",
+          }}
+        >
           <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            <button type="button"
-                    className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
-                    data-modal-toggle="popup-modal"
-                    onClick={() => {setStartYearModalOpen(false)}}
+            <button
+              type="button"
+              className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+              data-modal-toggle="popup-modal"
+              onClick={() => {
+                setStartYearModalOpen(false);
+              }}
             >
-              <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                   xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clip-rule="evenodd"></path>
+              <svg
+                aria-hidden="true"
+                className="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                ></path>
               </svg>
               <span className="sr-only">Close modal</span>
             </button>
             <div className="p-6 text-center text-black">
               <Bar
-                  data={{
-                    datasets: [
-                      {
-                        label: 'Unemployment',
-                        borderColor: "black",
-                        lineTension: 0,
-                        fill: true,
-                        borderJoinStyle: "round",
-                        data: yearVis.unemployment,
-                        borderWidth: 0.2,
-                        barPercentage: 1,
-                        categoryPercentage: 1,
-                        backgroundColor: "lightgray",
-                        barThickness: "flex"
-                      }
-                    ]
-                  }}
-                  options={options2}
-                  plugins={[
+                data={{
+                  datasets: [
                     {
-                      afterDatasetDraw: () => {
-                        console.log("called");
-                      }
-                    }
-                  ]}
+                      label: "Unemployment",
+                      borderColor: "black",
+                      lineTension: 0,
+                      fill: true,
+                      borderJoinStyle: "round",
+                      data: yearVis.unemployment,
+                      borderWidth: 0.2,
+                      barPercentage: 1,
+                      categoryPercentage: 1,
+                      backgroundColor: "lightgray",
+                      barThickness: "flex",
+                    },
+                  ],
+                }}
+                options={options2}
+                plugins={[
+                  {
+                    afterDatasetDraw: () => {
+                      console.log("called");
+                    },
+                  },
+                ]}
               />
               <Slider
-                  defaultValue={2000}
-                  className={"mt-4"}
-                  min={1929}
-                  max={2022}
-                  trackStyle={{ backgroundColor: 'white' }}
-                  railStyle={{ backgroundColor: 'lightblue' }}
-                  onAfterChange={e => {
-                    setStartYear(e)
-                  }}
-                  onChange={e => {
-                    setSliderYear(e);
-                  }}
+                defaultValue={2000}
+                className={"mt-4"}
+                min={1929}
+                max={2022}
+                trackStyle={{ backgroundColor: "white" }}
+                railStyle={{ backgroundColor: "lightblue" }}
+                onAfterChange={(e) => {
+                  setStartYear(e);
+                }}
+                onChange={(e) => {
+                  setSliderYear(e);
+                }}
               />
               <div className={"text-white"}>{sliderYear}</div>
             </div>
@@ -414,8 +449,10 @@ export default function InvestmentChart({bump}) {
         <div className="float-left space-x-4">
           <a>Start Year:</a>
           <button
-            className={"bg-transparent transition-colors hover:bg-blue-500 hover:bg-opacity-50 text-white py-1 px-4 border border-blue-700 rounded"}
-            onClick={()=>setStartYearModalOpen(true)}
+            className={
+              "bg-transparent transition-colors hover:bg-blue-500 hover:bg-opacity-50 text-white py-1 px-4 border border-blue-700 rounded"
+            }
+            onClick={() => setStartYearModalOpen(true)}
           >
             {startYear}
           </button>
@@ -427,7 +464,7 @@ export default function InvestmentChart({bump}) {
                 (simSelected ? "bg-blue-400" : "bg-gray-300") +
                 " transition-colors hover:bg-gray-400 text-gray-800 font-bold py-1 px-4 rounded-l-md"
               }
-              onClick={()=>setSimSelected(true)}
+              onClick={() => setSimSelected(true)}
             >
               Simulate
             </button>
@@ -436,7 +473,7 @@ export default function InvestmentChart({bump}) {
                 (simSelected ? "bg-gray-300" : "bg-blue-400") +
                 " transition-colors hover:bg-gray-400 text-gray-800 font-bold py-1 px-4 rounded-r-md"
               }
-              onClick={()=>setSimSelected(false)}
+              onClick={() => setSimSelected(false)}
             >
               Backtest
             </button>
@@ -456,6 +493,5 @@ export default function InvestmentChart({bump}) {
         </div>
       </div>
     </>
-  )
-
+  );
 }
