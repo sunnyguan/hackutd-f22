@@ -4,13 +4,16 @@ import traceback
 from flask import Flask, request, make_response
 from flask_cors import CORS
 
+from multiprocessing import Pool
+
 from simulation import monte_carlo_sim, backtest_sim
 
 app = Flask(__name__)
 CORS(app)
-
+computation_pool = Pool(6)
 
 EXPENSES = [(20, 10000, 90000, 0.037), (25, 8000, 22000, 0.044), (32, 80000, 320000, 0.053)]
+
 
 @app.route('/', methods=['GET'])
 def root_():
@@ -33,7 +36,8 @@ def compute_monte_carlo():
         start_year = j['start_year']
         num_sims = min(10000, max(100, j['num_sims']))
 
-        monte_carlo_results = monte_carlo_sim(investments, savings, loans, EXPENSES, start_year, num_sims)
+        monte_carlo_results = monte_carlo_sim(investments, savings, loans, EXPENSES, start_year, computation_pool,
+                                              num_sims)
     except AssertionError as e:
         _, _, tb = sys.exc_info()
         tb_info = traceback.extract_tb(tb)

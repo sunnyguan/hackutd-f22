@@ -13,8 +13,6 @@ def ASSERT_DOUBLE_GEQ(a, b):
     assert a - b > -0.001
 
 
-NUM_THREADS = 6
-
 # S&P 500, dividends reinvested
 STOCKS_HISTORICAL = [(1928, 0.4381), (1929, -0.0830), (1930, -0.2512), (1931, -0.4384), (1932, -0.0864), (1933, 0.4998),
                      (1934, -0.0119), (1935, 0.4674), (1936, 0.3194), (1937, -0.3534), (1938, 0.2928), (1939, -0.0110),
@@ -125,7 +123,8 @@ def simulate_life(stocks_historical, bonds_historical, savings, loans, expenses,
     return timeline
 
 
-def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], loans, expenses, start_year, num_sims=3):
+def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], loans, expenses, start_year, pool,
+                    num_sims=3):
     _i = investments  # name is too long
     last_n = 2022 - start_year
     assert 1928 < start_year < 2022
@@ -139,15 +138,14 @@ def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], l
     bonds_historical = [x[1] for x in BONDS_HISTORICAL[-last_n:]]
 
     # Simulate in threads
-    with Pool(NUM_THREADS) as p:
-        jobs = [
-            p.apply_async(simulate_life, (stocks_historical, bonds_historical, savings, loans, expenses, _i, num_years))
-            for _ in
-            range(num_sims)]
-        sim_results = []
-        for job in jobs:
-            timeline = job.get()
-            sim_results.append(timeline)
+    jobs = [
+        pool.apply_async(simulate_life, (stocks_historical, bonds_historical, savings, loans, expenses, _i, num_years))
+        for _ in
+        range(num_sims)]
+    sim_results = []
+    for job in jobs:
+        timeline = job.get()
+        sim_results.append(timeline)
 
     # Build results and return
     aggregate_results = defaultdict(list)
@@ -186,6 +184,8 @@ def backtest_sim(investments: dict[str, list[float]], savings: list[float], loan
 
 
 if __name__ == '__main__':
+    pool = Pool(6)
+
     CASH = [0.1] * 40
     STOCKS = [0.6] * 40
     BONDS = [0.3] * 40
@@ -201,7 +201,7 @@ if __name__ == '__main__':
         'cash': CASH,
         'stocks': STOCKS,
         'bonds': BONDS,
-    }, SAVINGS, LOANS, EXPENSES, START_YEAR, num_sims=5000)
+    }, SAVINGS, LOANS, EXPENSES, START_YEAR, pool, num_sims=5000)
 
     # print(json.dumps(monte_carlo_results, indent=2))
 
