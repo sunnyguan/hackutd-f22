@@ -15,6 +15,7 @@ def ASSERT_DOUBLE_GEQ(a, b):
 
 NUM_THREADS = 6
 
+# S&P 500, dividends reinvested
 STOCKS_HISTORICAL = [(1928, 0.4381), (1929, -0.0830), (1930, -0.2512), (1931, -0.4384), (1932, -0.0864), (1933, 0.4998),
                      (1934, -0.0119), (1935, 0.4674), (1936, 0.3194), (1937, -0.3534), (1938, 0.2928), (1939, -0.0110),
                      (1940, -0.1067), (1941, -0.1277), (1942, 0.1917), (1943, 0.2506), (1944, 0.1903), (1945, 0.3582),
@@ -29,95 +30,46 @@ STOCKS_HISTORICAL = [(1928, 0.4381), (1929, -0.0830), (1930, -0.2512), (1931, -0
                      (1994, 0.0133), (1995, 0.3720), (1996, 0.2268), (1997, 0.3310), (1998, 0.2834), (1999, 0.2089),
                      (2000, -0.0903), (2001, -0.1185), (2002, -0.2197), (2003, 0.2836), (2004, 0.1074), (2005, 0.0483),
                      (2006, 0.1561), (2007, 0.0548), (2008, -0.3655), (2009, 0.2594), (2010, 0.1482), (2011, 0.0210),
-                     (2012, 0.1589), (2013, 0.3215), (2014, 0.1352), (2015, 0.0138), (2016, 0.1177), (2017, 0.2161),
-                     (2018, -0.0423), (2019, 0.3121), (2020, 0.1802), (2021, 0.2847)]
+                     (2012, 0.1589), (2013, 0.3215), (2014, 0.1352), (2015, 0.0136), (2016, 0.1196), (2017, 0.2183),
+                     (2018, -0.0438), (2019, 0.3149), (2020, 0.1840), (2021, 0.3092), (2022, -0.1811)]
 
-BONDS_HISTORICAL = [(1927, 0.0317), (1928, 0.0345), (1929, 0.0336), (1930, 0.0322), (1931, 0.0393), (1932, 0.0335),
-                    (1933, 0.0353), (1934, 0.0301), (1935, 0.0284), (1936, 0.0259), (1937, 0.0273), (1938, 0.0256),
-                    (1939, 0.0235), (1940, 0.0201), (1941, 0.0247), (1942, 0.0249), (1943, 0.0249), (1944, 0.0248),
-                    (1945, 0.0233), (1946, 0.0224), (1947, 0.0239), (1948, 0.0244), (1949, 0.0219), (1950, 0.0239),
-                    (1951, 0.0270), (1952, 0.0275), (1953, 0.0259), (1954, 0.0251), (1955, 0.0296), (1956, 0.0359),
-                    (1957, 0.0321), (1958, 0.0386), (1959, 0.0469), (1960, 0.0384), (1961, 0.0406), (1962, 0.0386),
-                    (1963, 0.0413), (1964, 0.0418), (1965, 0.0462), (1966, 0.0484), (1967, 0.0570), (1968, 0.0603),
-                    (1969, 0.0765), (1970, 0.0639), (1971, 0.0593), (1972, 0.0636), (1973, 0.0674), (1974, 0.0743),
-                    (1975, 0.0800), (1976, 0.0687), (1977, 0.0769), (1978, 0.0901), (1979, 0.1039), (1980, 0.1284),
-                    (1981, 0.1372), (1982, 0.1054), (1983, 0.1183), (1984, 0.1150), (1985, 0.0926), (1986, 0.0711),
-                    (1987, 0.0899), (1988, 0.0911), (1989, 0.0784), (1990, 0.0808), (1991, 0.0709), (1992, 0.0677),
-                    (1993, 0.0577), (1994, 0.0781), (1995, 0.0571), (1996, 0.0630), (1997, 0.0581), (1998, 0.0465),
-                    (1999, 0.0644), (2000, 0.0511), (2001, 0.0505), (2002, 0.0382), (2003, 0.0425), (2004, 0.0422),
-                    (2005, 0.0439), (2006, 0.0470), (2007, 0.0402), (2008, 0.0221), (2009, 0.0384), (2010, 0.0329),
-                    (2011, 0.0188), (2012, 0.0176), (2013, 0.0304), (2014, 0.0217), (2015, 0.0227), (2016, 0.0245),
-                    (2017, 0.0241), (2018, 0.0269), (2019, 0.0192), (2020, 0.0093), (2021, 0.0151)]
+# Bloomberg U.S. Aggregate Bond Index
+BONDS_HISTORICAL = [(1976, 0.1560), (1977, 0.0300), (1978, 0.0140), (1979, 0.0190), (1980, 0.0270), (1981, 0.0630),
+                    (1982, 0.3260), (1983, 0.0840), (1984, 0.1515), (1985, 0.2211), (1986, 0.1526), (1987, 0.0276),
+                    (1988, 0.0789), (1989, 0.1453), (1990, 0.0896), (1991, 0.1600), (1992, 0.0740), (1993, 0.0975),
+                    (1994, -0.0292), (1995, 0.1847), (1996, 0.0363), (1997, 0.0965), (1998, 0.0869), (1999, -0.0082),
+                    (2000, 0.1163), (2001, 0.0844), (2002, 0.1026), (2003, 0.0410), (2004, 0.0434), (2005, 0.0243),
+                    (2006, 0.0433), (2007, 0.0697), (2008, 0.0524), (2009, 0.0593), (2010, 0.0654), (2011, 0.0784),
+                    (2012, 0.0421), (2013, -0.0202), (2014, 0.0597), (2015, 0.0055), (2016, 0.0265), (2017, 0.0354),
+                    (2018, 0.0001), (2019, 0.0872), (2020, 0.0751), (2021, -0.0154), (2022, -0.1301)]
 
 
 class Portfolio:
-    cash: float
-    stocks: float
-    bonds: deque[(float, float)]  # (rate, holdings)
+    savings: float
     loans: list[[float, float]]  # (-rate, remaining) heap
 
     def __init__(self):
-        self.cash = 0
-        self.stocks = 0
-        self.bonds = deque(maxlen=10)  # 10-year bonds, must re-buy
+        self.savings = 0
         self.loans = []
-
-    def bonds_value(self):
-        return sum(x[1] for x in self.bonds)
-
-    def all_savings_value(self):
-        return self.cash + self.stocks + self.bonds_value()
 
     def loans_value(self):
         return -sum(x[1] for x in self.loans)
 
     def net_worth(self):
-        return self.all_savings_value() + self.loans_value()
+        return self.savings + self.loans_value()
 
-    def balance(self, cash_comp, stocks_comp, bonds_comp, bonds_rate):
-        # Determine target amounts
-        total_value = self.all_savings_value()
+    def simulate_growth(self, cash_comp, stocks_comp, bonds_comp, stocks_rate, bonds_rate):
+        # If savings go negative, in debt -> no "growth". Assume this debt is interest-free
+        if self.savings > 0:
+            # Break down and adjust growth on each savings category
+            cash = cash_comp * self.savings
+            stocks = stocks_comp * self.savings * (1 + stocks_rate)
+            bonds = bonds_comp * self.savings * (1 + bonds_rate)
 
-        # Liquidate if holdings go to 0
-        if total_value < 0:
-            self.cash = 0
-            self.stocks = 0
-            self.bonds = deque(maxlen=10)
-            return
+            # Re-agg categories
+            self.savings = cash + stocks + bonds
 
-        cash_target = cash_comp * total_value
-        stocks_target = stocks_comp * total_value
-        bonds_target = bonds_comp * total_value
-
-        # Buy/sell stocks to hit target
-        self.cash -= stocks_target - self.stocks
-        self.stocks = stocks_target
-
-        # Buy/sell bonds to hit target
-        bonds_value = self.bonds_value()
-
-        # Sell oldest bonds
-        while bonds_value > bonds_target and self.bonds:
-            _, oldest_bond_value = self.bonds.popleft()
-            bonds_value -= oldest_bond_value
-            self.cash += oldest_bond_value
-
-        # Buy bonds @ current rate (even 0 in bonds)
-        ASSERT_DOUBLE_GEQ(bonds_target, bonds_value)  # Soft assertion in case sell all bonds
-        bonds_diff = bonds_target - bonds_value
-        self.bonds.append((bonds_rate, bonds_diff))
-        self.cash -= bonds_diff
-
-        # The remaining cash should be what we expect it to be
-        ASSERT_DOUBLE_EQ(self.cash / cash_target, 1)
-
-    def simulate_growth(self, stocks_rate):
-        self.stocks *= (1 + stocks_rate)
-
-        for _ in range(len(self.bonds)):
-            bond_rate, bond_value = self.bonds.popleft()
-            self.bonds.append((bond_rate, bond_value * (1 + bond_rate)))
-
+        # Grow loan debt for the year
         for loan in self.loans:
             loan_rate, loan_debt = loan
             loan[1] += loan_debt * (-loan_rate)
@@ -125,33 +77,28 @@ class Portfolio:
 
 def simulate_life(stocks_historical, bonds_historical, savings, loans, expenses, _i, num_years, sample=True):
     expenses = deque(sorted(expenses))
-    stocks_rate_sum = 0
-    bonds_rate_sum = 0
 
-    if not sample:
+    if sample:
+        # Draw samples for every year
+        stocks_historical = random.choices(stocks_historical, k=num_years)
+        bonds_historical = random.choices(bonds_historical, k=num_years)
+    else:
+        # Keep order as-is, but ensure we have enough data to simulate all the years requested
         assert len(stocks_historical) >= num_years and len(bonds_historical) >= num_years
 
     def simulate_year(p: Portfolio, yr: int):
-        nonlocal stocks_rate_sum, bonds_rate_sum
+        nonlocal savings
 
-        # Set rates for next year
-        if sample:
-            stocks_rate = random.choice(stocks_historical)
-            bonds_rate = random.choice(bonds_historical)
-        else:
-            stocks_rate = stocks_historical[year]
-            bonds_rate = bonds_historical[year]
-
-        stocks_rate_sum += stocks_rate
-        bonds_rate_sum += bonds_rate
+        stocks_rate = stocks_historical[year]
+        bonds_rate = bonds_historical[year]
 
         # Make purchases if there is an expense:
-        while expenses and (expenses[0][0] - 20) <= yr:
+        while expenses and (expenses[0][0] - 20) <= yr:  # year "0" is age 20.
             age, immediate, debt, loan_rate = expenses.popleft()
-            p.cash -= immediate
+            p.savings -= immediate
             heapq.heappush(p.loans, [-loan_rate, debt])
 
-        # Pay off the most expensive loans
+        # Pay off highest interest loans first
         loan_budget = loans[year]
         while p.loans and loan_budget > 0:
             loan_payment = min(loan_budget, p.loans[0][1])
@@ -160,22 +107,11 @@ def simulate_life(stocks_historical, bonds_historical, savings, loans, expenses,
             if p.loans[0][1] <= 0.01:
                 heapq.heappop(p.loans)
 
-        # Put remaining loan budget into savings
-        p.cash += loan_budget
-
-        # Sell bonds if expired (sell before re-balancing)
-        if len(p.bonds) == p.bonds.maxlen:
-            _, bond_value = p.bonds.popleft()
-            p.cash += bond_value
-
-        # Add savings to cash (could be negative if expenses > income)
-        p.cash += savings[yr]
-
-        # Re-balance to new composition
-        p.balance(_i['cash'][yr], _i['stocks'][yr], _i['bonds'][yr], bonds_rate)
+        # Put remaining loan budget and un-budgeted salary into savings
+        p.savings += loan_budget + savings[yr]
 
         # Adjust bond and stock values (hopefully net growth)
-        p.simulate_growth(stocks_rate)
+        p.simulate_growth(_i['cash'][yr], _i['stocks'][yr], _i['bonds'][yr], stocks_rate, bonds_rate)
 
     timeline = []
     # Initialize portfolio
@@ -186,7 +122,7 @@ def simulate_life(stocks_historical, bonds_historical, savings, loans, expenses,
         simulate_year(portfolio, year)
         timeline.append(portfolio.net_worth())
 
-    return timeline, stocks_rate_sum, bonds_rate_sum
+    return timeline
 
 
 def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], loans, expenses, start_year, num_sims=3):
@@ -202,10 +138,6 @@ def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], l
     stocks_historical = [x[1] for x in STOCKS_HISTORICAL[-last_n:]]
     bonds_historical = [x[1] for x in BONDS_HISTORICAL[-last_n:]]
 
-    # Collect stats across all simulations on what rates get drawn
-    stocks_rate_sum = 0
-    bonds_rate_sum = 0
-
     # Simulate in threads
     with Pool(NUM_THREADS) as p:
         jobs = [
@@ -214,10 +146,8 @@ def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], l
             range(num_sims)]
         sim_results = []
         for job in jobs:
-            timeline, stocks_rate_sub_sum, bonds_rate_sub_sum = job.get()
+            timeline = job.get()
             sim_results.append(timeline)
-            stocks_rate_sum += stocks_rate_sub_sum
-            bonds_rate_sum += bonds_rate_sub_sum
 
     # Build results and return
     aggregate_results = defaultdict(list)
@@ -229,8 +159,6 @@ def monte_carlo_sim(investments: dict[str, list[float]], savings: list[float], l
 
     return {
         'time_series': aggregate_results,
-        'avg_stocks_yoy': stocks_rate_sum / num_sims / num_years,
-        'avg_bonds_yoy': bonds_rate_sum / num_sims / num_years,
     }
 
 
@@ -242,7 +170,7 @@ def backtest_sim(investments: dict[str, list[float]], savings: list[float], loan
     for i in range(num_years):
         ASSERT_DOUBLE_EQ(_i['cash'][i] + _i['stocks'][i] + _i['bonds'][i], 1)
 
-    # Build bootstrap banks out of last_n years
+    # Generate time series out of last_n years
     stocks_historical = [x[1] for x in STOCKS_HISTORICAL if start_year <= x[0]]
     bonds_historical = [x[1] for x in BONDS_HISTORICAL if start_year <= x[0]]
 
@@ -253,9 +181,7 @@ def backtest_sim(investments: dict[str, list[float]], savings: list[float], loan
     return {
         'time_series': {
             'net_worth': timeline
-        },
-        'avg_stocks_yoy': stocks_rate_sum / num_years,
-        'avg_bonds_yoy': bonds_rate_sum / num_years,
+        }
     }
 
 
