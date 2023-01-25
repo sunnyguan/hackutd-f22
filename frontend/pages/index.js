@@ -1,4 +1,4 @@
-import MovableChart from "./MovableChart";
+import PortfolioChart from "./PortfolioChart";
 import { useEffect, useState } from "react";
 import SalaryChart from "./SalaryChart";
 import Dashboard from "./Dashboard";
@@ -14,7 +14,7 @@ export const headers = [
 
 function Switch({ tab }) {
   if (tab === "Investments") {
-    return <MovableChart update={() => {}} />;
+    return <PortfolioChart update={() => {}} />;
   } else if (tab === "Salary") {
     return <SalaryChart update={() => {}} />;
   } else if (tab === "Dashboard") {

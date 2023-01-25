@@ -1,9 +1,10 @@
 import InvestmentChart from "./InvestmentChart";
-import MovableChart from "./MovableChart";
+import PortfolioChart from "./PortfolioChart";
 import SalaryChart from "./SalaryChart";
 import { useState } from "react";
 import Budget from "./Budget";
 import MiscItems from "./MiscItems";
+import ChartSelector from "./ChartSelector";
 
 export default function Dashboard() {
   const [id, setId] = useState(0);
@@ -18,12 +19,7 @@ export default function Dashboard() {
         <InvestmentChart bump={id} />
       </div>
       <hr />
-      <div className={"grid grid-cols-4 divide-x text-center"}>
-        <MovableChart update={update} />
-        <SalaryChart update={update} />
-        <Budget update={update} />
-        <MiscItems />
-      </div>
+      <ChartSelector update={update}/>
     </div>
   );
 }

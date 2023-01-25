@@ -62,6 +62,9 @@ export default function SalaryChart({ update }) {
           ticks: {
             color: "white",
           },
+          afterFit: function(scaleInstance) {
+            scaleInstance.width = DEFAULTS["y-label-width"]; // set y-label to 40 pixel fixed
+          }
         },
         x: {
           ticks: {
@@ -182,7 +185,7 @@ export default function SalaryChart({ update }) {
           options={options.options}
           data={options.data}
           width={"100%"}
-          height={"400px"}
+          height={"200px"}
           type={options.type}
         />
       </div>
