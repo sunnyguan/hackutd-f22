@@ -46,6 +46,39 @@ export default function PortfolioChart({ update }) {
     dataset.splice(index, 0, { x: x, y: y });
   }
 
+  function popPoint(dataset, x) {
+    // Find closest point other than endpoints
+    let closest = NaN;
+    for (let index = 1; index < dataset.length - 1; index++) {
+      if (isNaN(closest) || Math.abs(x - dataset[index].x) < Math.abs(x - dataset[closest].x)) {
+        closest = index;
+      }
+    }
+    // If no eligible closest point, do nothing
+    if (isNaN(closest) || Math.abs(x - dataset[closest].x) > 5) return;
+    // Take out this point
+    dataset.splice(closest, 1);
+  }
+
+  function handleRightMouse(e) {
+    // Block default context menu & other stuff resulting from right click
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Get click coordinates
+    let chart = chartRef.current;
+    let x = chart.scales.x.getValueForPixel(e.offsetX);  // For some reason x is not the same as onClick's x, but offsetX matches.
+    let y = chart.scales.y.getValueForPixel(e.offsetY);
+
+    // Potentially remove point from chart
+    let datasets = chart.data.datasets;
+    for (let dataset of datasets) {
+      popPoint(dataset.data, Math.round(x));
+    }
+    save(datasets);
+    chart.update();
+  }
+
   let options = {
     type: "scatter",
     data: {
@@ -137,7 +170,6 @@ export default function PortfolioChart({ update }) {
         let chart = chartRef.current;
         let x = chart.scales.x.getValueForPixel(e.x);
         let y = chart.scales.y.getValueForPixel(e.y);
-        console.log(x, y);
 
         let datasets = chart.data.datasets;
         for (let dataset of datasets) {
@@ -248,6 +280,9 @@ export default function PortfolioChart({ update }) {
             ctx.stroke();
             ctx.restore();
           }
+        },
+        afterInit: (chart) => {
+          chart.canvas.addEventListener('contextmenu', handleRightMouse, false);
         },
       },
     ],
