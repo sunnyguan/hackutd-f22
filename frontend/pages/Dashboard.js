@@ -19,7 +19,7 @@ export default function Dashboard() {
         <InvestmentChart bump={id} />
       </div>
       <hr />
-      <ChartSelector update={update}/>
+      <ChartSelector update={update} />
     </div>
   );
 }

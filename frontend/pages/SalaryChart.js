@@ -62,9 +62,9 @@ export default function SalaryChart({ update }) {
           ticks: {
             color: "white",
           },
-          afterFit: function(scaleInstance) {
+          afterFit: function (scaleInstance) {
             scaleInstance.width = DEFAULTS["y-label-width"]; // set y-label to 40 pixel fixed
-          }
+          },
         },
         x: {
           ticks: {

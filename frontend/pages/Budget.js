@@ -2,7 +2,7 @@ import { Chart as ChartJS } from "chart.js/auto";
 import { Chart } from "react-chartjs-2";
 import { useEffect, useRef, useState } from "react";
 import "chartjs-plugin-dragdata";
-import {DEFAULTS, getOrDefault} from "./Defaults";
+import { DEFAULTS, getOrDefault } from "./Defaults";
 
 export default function Budget({ update }) {
   const chartRef = useRef(null);
@@ -134,9 +134,9 @@ export default function Budget({ update }) {
           ticks: {
             color: "white",
           },
-          afterFit: function(scaleInstance) {
+          afterFit: function (scaleInstance) {
             scaleInstance.width = DEFAULTS["y-label-width"]; // set y-label to 40 pixel fixed
-          }
+          },
         },
         x: {
           ticks: {
