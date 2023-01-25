@@ -2,9 +2,9 @@ import { Chart as ChartJS } from "chart.js/auto";
 import { Chart } from "react-chartjs-2";
 import { useEffect, useRef, useState } from "react";
 import "chartjs-plugin-dragdata";
-import { getOrDefault } from "./Defaults";
+import { DEFAULTS, getOrDefault } from "./Defaults";
 
-export default function MovableChart({ update }) {
+export default function PortfolioChart({ update }) {
   const chartRef = useRef(null);
   const [investment1, setInvestment1] = useState([]);
   const [investment2, setInvestment2] = useState([]);
@@ -50,7 +50,10 @@ export default function MovableChart({ update }) {
     // Find closest point other than endpoints
     let closest = NaN;
     for (let index = 1; index < dataset.length - 1; index++) {
-      if (isNaN(closest) || Math.abs(x - dataset[index].x) < Math.abs(x - dataset[closest].x)) {
+      if (
+        isNaN(closest) ||
+        Math.abs(x - dataset[index].x) < Math.abs(x - dataset[closest].x)
+      ) {
         closest = index;
       }
     }
@@ -67,7 +70,7 @@ export default function MovableChart({ update }) {
 
     // Get click coordinates
     let chart = chartRef.current;
-    let x = chart.scales.x.getValueForPixel(e.offsetX);  // For some reason x is not the same as onClick's x, but offsetX matches.
+    let x = chart.scales.x.getValueForPixel(e.offsetX); // For some reason x is not the same as onClick's x, but offsetX matches.
     let y = chart.scales.y.getValueForPixel(e.offsetY);
 
     // Potentially remove point from chart
@@ -145,6 +148,9 @@ export default function MovableChart({ update }) {
           min: 0,
           ticks: {
             color: "white",
+          },
+          afterFit: function (scaleInstance) {
+            scaleInstance.width = DEFAULTS["y-label-width"]; // set y-label to 40 pixel fixed
           },
         },
         x: {
@@ -279,7 +285,7 @@ export default function MovableChart({ update }) {
           }
         },
         afterInit: (chart) => {
-          chart.canvas.addEventListener('contextmenu', handleRightMouse, false);
+          chart.canvas.addEventListener("contextmenu", handleRightMouse, false);
         },
       },
     ],
@@ -293,7 +299,7 @@ export default function MovableChart({ update }) {
           options={options.options}
           data={options.data}
           width={"100%"}
-          height={"400px"}
+          height={"200px"}
           type={options.type}
           className={"h-full"}
           plugins={options.plugins}

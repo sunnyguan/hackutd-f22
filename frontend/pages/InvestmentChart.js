@@ -4,7 +4,7 @@ import "chartjs-plugin-dragdata";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import * as yearVis from "../years.json";
-import { getOrDefault } from "./Defaults";
+import { DEFAULTS, getOrDefault } from "./Defaults";
 
 export default function InvestmentChart({ bump }) {
   const chartRef = useRef(null);
@@ -218,6 +218,9 @@ export default function InvestmentChart({ bump }) {
           min: minRange,
           ticks: {
             color: "white",
+          },
+          afterFit: function (scaleInstance) {
+            scaleInstance.width = DEFAULTS["y-label-width"]; // set y-label to 40 pixel fixed
           },
         },
         y2: {

@@ -45,6 +45,7 @@ export const DEFAULTS = {
     { x: 20, y: 20000 },
     { x: 100, y: 20000 },
   ],
+  "y-label-width": 80,
 };
 
 export function getOrDefault(name) {
