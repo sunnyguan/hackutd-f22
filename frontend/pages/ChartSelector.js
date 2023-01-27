@@ -1,11 +1,16 @@
 import { useState } from "react";
 import StackEditChart from "./StackEditChart";
 import MiscItems from "./MiscItems";
+import { aggregate_info } from "../utils/calculations_utils";
 
 export function save(datasets, name) {
   let combined = [];
   for (let dataset of datasets) combined.push(dataset.data);
   localStorage.setItem(name, JSON.stringify(combined));
+}
+
+export function logCsv() {
+  console.log(aggregate_info());
 }
 
 export function getCharts(update, height = "200px") {
@@ -35,6 +40,8 @@ export function getCharts(update, height = "200px") {
         add_point_props={{ tension: 0.2 }}
         add_scale_props={{ max: 100 }}
         height={height}
+        const_top_line={true}
+        datapoint_labeler={(val) => `${val}%`}
       />
     ),
     Salary: (
@@ -49,7 +56,7 @@ export function getCharts(update, height = "200px") {
             borderColor: "rgb(20, 225, 54)",
           },
         ]}
-        add_scale_props={{ max: 200000 }}
+        add_scale_props={{ max: 800000 }}
         height={height}
       />
     ),
@@ -81,7 +88,7 @@ export function getCharts(update, height = "200px") {
           },
         ]}
         add_point_props={{ tension: 0.2 }}
-        add_scale_props={{ max: 100000 }}
+        add_scale_props={{ max: 200000 }}
         height={height}
       />
     ),
@@ -108,6 +115,21 @@ export default function ChartSelector({ update }) {
             {option}
           </div>
         ))}
+      </div>
+      <div
+        onClick={() => {
+          logCsv();
+        }}
+      >
+        log csv info
+      </div>
+      <div
+        onClick={() => {
+          localStorage.clear();
+          location.reload();
+        }}
+      >
+        clear localstorage
       </div>
     </div>
   );

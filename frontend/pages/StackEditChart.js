@@ -4,13 +4,22 @@ import { useEffect, useRef, useState } from "react";
 import "chartjs-plugin-dragdata";
 import { DEFAULTS, getOrDefault, POINT_PROPS, SCALE_PROPS } from "./Defaults";
 
+function datapoint_label(value) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(value);
+}
+
 export default function StackEditChart({
   update,
   name,
   line_options,
   add_point_props,
   add_scale_props,
-  height,
+  height = "400px",
+  const_top_line = false,
+  datapoint_labeler = datapoint_label,
 }) {
   const num_categories = line_options.length;
   const chartRef = useRef(null);
@@ -163,6 +172,9 @@ export default function StackEditChart({
           round: 2,
           showTooltip: true,
           magnet: false,
+          onDragStart: function (e, element) {
+            if (const_top_line && element === 0) return false;
+          },
           onDrag: function (e, datasetIndex, index, value) {
             e.target.style.cursor = "grabbing";
             let datasets = chartRef.current.data.datasets;
@@ -215,10 +227,7 @@ export default function StackEditChart({
                 label += ": ";
               }
               if (context.parsed.y !== null) {
-                label += new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                }).format(context.parsed.y);
+                label += datapoint_labeler(context.parsed.y);
               }
               return label;
             },

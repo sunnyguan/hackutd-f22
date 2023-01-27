@@ -3,8 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import "chartjs-plugin-dragdata";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import * as yearVis from "../years.json";
-import { DEFAULTS, getOrDefault, POINT_PROPS } from "./Defaults";
+import { unemployment } from "../years.json";
+import { DEFAULTS, POINT_PROPS } from "./Defaults";
+import { aggregate_info, getChartData } from "../utils/calculations_utils";
 
 export default function InvestmentChart({ bump }) {
   const chartRef = useRef(null);
@@ -26,75 +27,13 @@ export default function InvestmentChart({ bump }) {
     dragData: false,
   };
 
-  // for (let i = 0; i < 101; i++) {
-  //   TEST["time_series"]["cash"].push(0.8);
-  //   TEST["time_series"]["stocks"].push(0.1);
-  //   TEST["time_series"]["bonds"].push(0.1);
-  //   TEST["time_series"]["savings"].push(5000);
-  // }
-
-  function calculate(values, div) {
-    let res = [];
-    for (let i = 0; i < values.length - 1; i++) {
-      for (let j = values[i].x; j < values[i + 1].x; j++) {
-        let newy =
-          ((values[i + 1].y - values[i].y) / (values[i + 1].x - values[i].x)) *
-            (j - values[i].x) +
-          values[i].y;
-        res.push(newy / div);
-      }
-    }
-    res.push(values[values.length - 1].y / div);
-    return res;
-  }
-
-  function diff(values1, values2) {
-    let res1 = calculate(values1, 1);
-    let res2 = calculate(values2, 1);
-    let res = [];
-    for (let i = 0; i < res1.length; i++) {
-      res.push(res1[i] - res2[i]);
-    }
-    console.log(res);
-    return res;
-  }
-
   function loadNetWorth() {
-    const [cash, bonds, stocks] = getOrDefault("investments");
-    const savings = getOrDefault("salary")[0];
-    const budget = getOrDefault("budgets")[0];
-    const loans = getOrDefault("budgets")[3];
-
     let info = {
-      time_series: {
-        cash: calculate(cash, 100),
-        stocks: calculate(stocks, 100),
-        bonds: calculate(bonds, 100),
-        savings: diff(savings, budget),
-        loans: calculate(loans, 1),
-      },
+      time_series: aggregate_info(),
       start_year: parseInt(startYear),
       num_sims: 1000,
     };
 
-    console.log(info);
-
-    const length = info["time_series"]["cash"].length;
-
-    for (let i = 0; i < length; i++) {
-      info["time_series"]["cash"][i] -= info["time_series"]["stocks"][i];
-      info["time_series"]["stocks"][i] -= info["time_series"]["bonds"][i];
-    }
-
-    for (let i = 0; i < length; i++) {
-      console.log(
-        info["time_series"]["cash"][i] +
-          info["time_series"]["bonds"][i] +
-          info["time_series"]["stocks"][i]
-      );
-    }
-
-    console.log(info);
     const method = simSelected ? "monte-carlo" : "backtest";
     fetch(`http://127.0.0.1:5000/compute-${method}`, {
       method: "POST",
@@ -112,44 +51,15 @@ export default function InvestmentChart({ bump }) {
         }
       })
       .then((data) => {
-        let mx = 0;
-        let mn = 0;
-        if (method === "monte-carlo") {
-          let temp = [];
-          for (let i = 20; i <= 100; i++)
-            temp.push({ x: i, y: data.time_series.mid[i - 20] });
-          setNetWorth(temp);
-
-          temp = [];
-          for (let i = 20; i <= 100; i++)
-            temp.push({ x: i, y: data.time_series.low[i - 20] });
-          setNetWorthLow(temp);
-
-          temp = [];
-          for (let i = 20; i <= 100; i++) {
-            temp.push({ x: i, y: data.time_series.high[i - 20] });
-            mx = Math.max(mx, data.time_series.high[i - 20]);
-            mn = Math.min(mn, data.time_series.high[i - 20]);
-          }
-          setNetWorthHigh(temp);
-          setMaxRange(mx * 1.1);
-          setMinRange(mn - 1000);
-        } else {
-          let temp = [];
-          for (let i = 20; i < 20 + data.time_series.net_worth.length; i++) {
-            let val = data.time_series.net_worth[i - 20];
-            if (!isNaN(val)) {
-              mx = Math.max(mx, val);
-              mn = Math.min(mn, val);
-              temp.push({ x: i, y: val });
-            }
-          }
-          setNetWorth(temp);
-          setNetWorthLow([]);
-          setNetWorthHigh([]);
-          setMaxRange(mx * 1.1);
-          setMinRange(mn - 1000);
-        }
+        const [netWorth, netWorthLow, netWorthHigh, mx, mn] = getChartData(
+          data,
+          method
+        );
+        setNetWorth(netWorth);
+        setNetWorthLow(netWorthLow);
+        setNetWorthHigh(netWorthHigh);
+        setMaxRange(mx);
+        setMinRange(mn);
       })
       .catch((err) => {
         console.log(err);
@@ -280,15 +190,6 @@ export default function InvestmentChart({ bump }) {
     },
   };
 
-  function update() {
-    loadNetWorth();
-  }
-
-  function handleChange(e) {
-    e.preventDefault();
-    setStartYear(e.target.value);
-  }
-
   const options2 = {
     pan: {
       enabled: true,
@@ -391,7 +292,7 @@ export default function InvestmentChart({ bump }) {
                       lineTension: 0,
                       fill: true,
                       borderJoinStyle: "round",
-                      data: yearVis.unemployment,
+                      data: unemployment,
                       borderWidth: 0.2,
                       barPercentage: 1,
                       categoryPercentage: 1,
