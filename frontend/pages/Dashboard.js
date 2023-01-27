@@ -1,9 +1,5 @@
 import InvestmentChart from "./InvestmentChart";
-import PortfolioChart from "./PortfolioChart";
-import SalaryChart from "./SalaryChart";
 import { useState } from "react";
-import Budget from "./Budget";
-import MiscItems from "./MiscItems";
 import ChartSelector from "./ChartSelector";
 
 export default function Dashboard() {

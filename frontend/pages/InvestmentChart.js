@@ -4,7 +4,7 @@ import "chartjs-plugin-dragdata";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import * as yearVis from "../years.json";
-import { DEFAULTS, getOrDefault } from "./Defaults";
+import { DEFAULTS, getOrDefault, POINT_PROPS } from "./Defaults";
 
 export default function InvestmentChart({ bump }) {
   const chartRef = useRef(null);
@@ -17,6 +17,14 @@ export default function InvestmentChart({ bump }) {
   const [startYear, setStartYear] = useState(2000);
   const [simSelected, setSimSelected] = useState(true);
   const [sliderYear, setSliderYear] = useState(2000);
+
+  const INVESTMENT_POINT_PROPS = {
+    ...POINT_PROPS,
+    pointHitRadius: 5,
+    pointRadius: 0,
+    pointHoverRadius: 5,
+    dragData: false,
+  };
 
   // for (let i = 0; i < 101; i++) {
   //   TEST["time_series"]["cash"].push(0.8);
@@ -52,12 +60,10 @@ export default function InvestmentChart({ bump }) {
   }
 
   function loadNetWorth() {
-    const cash = getOrDefault("investments-0");
-    const bonds = getOrDefault("investments-1");
-    const stocks = getOrDefault("investments-2");
-    const savings = getOrDefault("salary");
-    const budget = getOrDefault("budget-0");
-    const loans = getOrDefault("budget-3");
+    const [cash, bonds, stocks] = getOrDefault("investments");
+    const savings = getOrDefault("salary")[0];
+    const budget = getOrDefault("budgets")[0];
+    const loans = getOrDefault("budgets")[3];
 
     let info = {
       time_series: {
@@ -152,28 +158,6 @@ export default function InvestmentChart({ bump }) {
 
   useEffect(loadNetWorth, [bump, startYear, simSelected]);
 
-  const POINT_PROPS = {
-    pointHitRadius: 5,
-    pointRadius: 0,
-    pointHoverRadius: 5,
-    fill: true,
-    showLine: true,
-  };
-
-  function pushPoint(dataset, x) {
-    let index = 0;
-    for (; index < dataset.length; index++) {
-      if (dataset[index].x === x) return;
-      if (dataset[index].x > x) break;
-    }
-    let p1 = dataset[index - 1];
-    let p2 = dataset[index];
-
-    let y = ((x - p1.x) / (p2.x - p1.x)) * (p2.y - p1.y) + p1.y;
-
-    dataset.splice(index, 0, { x: x, y: y });
-  }
-
   let options = {
     type: "scatter",
     data: {
@@ -181,32 +165,29 @@ export default function InvestmentChart({ bump }) {
         {
           label: "Net Worth Mid",
           yAxisID: "y1",
-          dragData: false,
           data: netWorth,
           backgroundColor: "rgba(10, 173, 255, 0.25)",
           borderColor: "rgb(10, 173, 255)",
           order: 2,
-          ...POINT_PROPS,
+          ...INVESTMENT_POINT_PROPS,
         },
         {
           label: "Net Worth Low",
           yAxisID: "y2",
-          dragData: false,
           data: netWorthLow,
           backgroundColor: "rgba(0, 68, 102, 0.25)",
           borderColor: "rgb(0, 68, 102)",
           order: 1,
-          ...POINT_PROPS,
+          ...INVESTMENT_POINT_PROPS,
         },
         {
           label: "Net Worth High",
           yAxisID: "y3",
-          dragData: false,
           data: netWorthHigh,
           backgroundColor: "rgba(173, 228, 255, 0.25)",
           borderColor: "rgb(173, 228, 255)",
           order: 3,
-          ...POINT_PROPS,
+          ...INVESTMENT_POINT_PROPS,
         },
       ],
     },

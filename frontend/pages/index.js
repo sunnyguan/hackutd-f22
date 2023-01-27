@@ -1,26 +1,26 @@
-import PortfolioChart from "./PortfolioChart";
 import { useEffect, useState } from "react";
-import SalaryChart from "./SalaryChart";
 import Dashboard from "./Dashboard";
 import LandingPage from "./LandingPage";
-import Budget from "./Budget";
+import { getCharts } from "./ChartSelector";
 
 export const headers = [
   ["Dashboard", "#0aadff"],
-  ["Investments", "#ffb01f"],
+  ["Portfolio", "#ffb01f"],
   ["Salary", "#10bc2d"],
   ["Budget", "#cd6590"],
 ];
 
+const options = getCharts(() => {}, "400px");
+
 function Switch({ tab }) {
-  if (tab === "Investments") {
-    return <PortfolioChart update={() => {}} />;
+  if (tab === "Portfolio") {
+    return options[tab];
   } else if (tab === "Salary") {
-    return <SalaryChart update={() => {}} />;
+    return options[tab];
   } else if (tab === "Dashboard") {
     return <Dashboard />;
   } else if (tab === "Budget") {
-    return <Budget update={() => {}} />;
+    return options[tab];
   }
 }
 
@@ -48,6 +48,7 @@ export default function Home() {
         color: "#ffffff",
         fontSize: "25px",
       }}
+      className={"h-full"}
     >
       {info ? (
         <>
@@ -66,13 +67,13 @@ export default function Home() {
             <div
               className={
                 "text-[#ffb01f] cursor-pointer p-2 mx-4 " +
-                (tab === "Investments" ? "font-bold" : "font-normal")
+                (tab === "Portfolio" ? "font-bold" : "font-normal")
               }
               onClick={(e) => {
-                setTab("Investments");
+                setTab("Portfolio");
               }}
             >
-              {"Investments"}
+              {"Portfolio"}
             </div>
             <div
               className={
@@ -97,7 +98,7 @@ export default function Home() {
               {"Budget"}
             </div>
           </div>
-          <div className={"mx-9"}>
+          <div className={"mx-9 h-full"}>
             <h1
               className={
                 "text-5xl text-center mx-10 font-bold drop-shadow-[5px_5px_10px_#66A2FC]"

@@ -17,7 +17,6 @@ function Item({ name, down, loan, rate, age }) {
 export default function MiscItems() {
   return (
     <div className={"flex flex-col"}>
-      <div className={"text-2xl"}>Large Purchases</div>
       <div className={"w-full mt-4 space-y-2 px-16"}>
         <Item
           name={"Student Loans"}
