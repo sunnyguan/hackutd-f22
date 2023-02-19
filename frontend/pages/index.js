@@ -40,6 +40,22 @@ export default function Home() {
     localStorage.setItem("info", data);
   }
 
+  function TabItem({ name }) {
+    return (
+      <div
+        className={
+          "text-gray cursor-pointer p-2 mx-4 " +
+          (tab === name ? "font-bold" : "font-normal")
+        }
+        onClick={(e) => {
+          setTab(name);
+        }}
+      >
+        {name}
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
@@ -53,50 +69,10 @@ export default function Home() {
       {info ? (
         <>
           <div className={"flex w-full p-4 mx-auto justify-center"}>
-            <div
-              className={
-                "text-[#007AB8] cursor-pointer p-2 mx-4 " +
-                (tab === "Dashboard" ? "font-bold" : "font-normal")
-              }
-              onClick={(e) => {
-                setTab("Dashboard");
-              }}
-            >
-              {"Dashboard"}
-            </div>
-            <div
-              className={
-                "text-[#ffb01f] cursor-pointer p-2 mx-4 " +
-                (tab === "Portfolio" ? "font-bold" : "font-normal")
-              }
-              onClick={(e) => {
-                setTab("Portfolio");
-              }}
-            >
-              {"Portfolio"}
-            </div>
-            <div
-              className={
-                "text-[#10bc2d] cursor-pointer p-2 mx-4 " +
-                (tab === "Salary" ? "font-bold" : "font-normal")
-              }
-              onClick={(e) => {
-                setTab("Salary");
-              }}
-            >
-              {"Salary"}
-            </div>
-            <div
-              className={
-                "text-[#cd6590] cursor-pointer p-2 mx-4 " +
-                (tab === "Budget" ? "font-bold" : "font-normal")
-              }
-              onClick={(e) => {
-                setTab("Budget");
-              }}
-            >
-              {"Budget"}
-            </div>
+            <TabItem name={"Dashboard"} />
+            <TabItem name={"Portfolio"} />
+            <TabItem name={"Salary"} />
+            <TabItem name={"Budget"} />
           </div>
           <div className={"mx-9 h-full"}>
             <h1
