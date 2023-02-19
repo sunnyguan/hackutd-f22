@@ -33,10 +33,11 @@ def compute_monte_carlo():
         }
         savings = j['time_series']['savings']
         loans = j['time_series']['loans']
+        expenses = j['expenses']
         start_year = j['start_year']
         num_sims = min(10000, max(100, j['num_sims']))
 
-        monte_carlo_results = monte_carlo_sim(investments, savings, loans, EXPENSES, start_year, computation_pool,
+        monte_carlo_results = monte_carlo_sim(investments, savings, loans, expenses, start_year, computation_pool,
                                               num_sims)
     except AssertionError as e:
         _, _, tb = sys.exc_info()

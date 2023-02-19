@@ -3,6 +3,7 @@ import Dashboard from "./Dashboard";
 import LandingPage from "./LandingPage";
 import { getCharts } from "./ChartSelector";
 import Calculator from "./Calculator";
+import MiscItems from "./MiscItems";
 
 export const headers = [
   ["Dashboard", "#0aadff"],
@@ -22,6 +23,8 @@ function Switch({ tab }) {
     return <Dashboard />;
   } else if (tab === "Budget") {
     return options[tab];
+  } else if (tab === "Expenses") {
+    return <MiscItems />;
   } else if (tab === "Calculator") {
     return <Calculator />;
   }
@@ -76,6 +79,7 @@ export default function Home() {
             <TabItem name={"Portfolio"} />
             <TabItem name={"Salary"} />
             <TabItem name={"Budget"} />
+            <TabItem name={"Expenses"} />
             <TabItem name={"Calculator"} />
           </div>
           <div className={"mx-9 flex-1 flex flex-col"}>

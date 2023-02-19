@@ -4,7 +4,7 @@ import "chartjs-plugin-dragdata";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import data from "../years.js";
-import { DEFAULTS, POINT_PROPS } from "./Defaults";
+import { DEFAULTS, getOrDefault, POINT_PROPS } from "./Defaults";
 import { aggregate_info, getChartData } from "../utils/calculations_utils";
 
 import { Chart as Chartt } from "chart.js";
@@ -36,10 +36,27 @@ export default function InvestmentChart({ bump }) {
     dragData: false,
   };
 
+  function getExpenses() {
+    let exp = getOrDefault("expenses");
+    console.log(exp);
+    let res = [];
+    for (const ex of exp) {
+      res.push([
+        parseInt(ex.age),
+        parseInt(ex.initial),
+        parseInt(ex.remaining),
+        parseInt(ex.interest),
+      ]);
+    }
+    console.log(res);
+    return res;
+  }
+
   function loadNetWorth() {
     let info = {
       time_series: aggregate_info(),
       start_year: parseInt(startYear),
+      expenses: getExpenses(),
       num_sims: 1000,
     };
 
