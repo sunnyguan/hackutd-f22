@@ -11,7 +11,7 @@ export default function Dashboard() {
 
   return (
     <div className={"flex flex-col"}>
-      <div className={"flex-1"}>
+      <div className={"flex-1 flex flex-col"}>
         <InvestmentChart bump={id} />
       </div>
       <hr />

@@ -4,6 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import "chartjs-plugin-dragdata";
 import { DEFAULTS, getOrDefault, POINT_PROPS, SCALE_PROPS } from "./Defaults";
 
+import { Chart as Chartt } from "chart.js";
+
+if (typeof window !== "undefined") {
+  (async () => {
+    const { default: zoomPlugin } = await import("chartjs-plugin-zoom");
+    Chartt.register(zoomPlugin);
+  })();
+}
+
 function datapoint_label(value) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -168,6 +177,21 @@ export default function StackEditChart({
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
+        zoom: {
+          pan: {
+            enabled: true,
+            modifierKey: "shift",
+          },
+          zoom: {
+            wheel: {
+              enabled: true,
+            },
+            pinch: {
+              enabled: true,
+            },
+            mode: "xy",
+          },
+        },
         dragData: {
           round: 2,
           showTooltip: true,
@@ -244,8 +268,8 @@ export default function StackEditChart({
   };
 
   return (
-    <div className={"flex"}>
-      <div className={"flex-1"}>
+    <div className={"flex flex-1 flex-col items-start "}>
+      <div className={"flex-1 self-stretch"}>
         <Chart
           ref={chartRef}
           options={options.options}
@@ -257,6 +281,16 @@ export default function StackEditChart({
           plugins={options.plugins}
         />
       </div>
+      <button
+        onClick={() => {
+          chartRef.current.resetZoom();
+        }}
+        className={
+          "self-center m-2 px-4 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 active:bg-blue-900"
+        }
+      >
+        Reset Zoom
+      </button>
     </div>
   );
 }

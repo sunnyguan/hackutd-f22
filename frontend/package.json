@@ -11,6 +11,7 @@
   "dependencies": {
     "chart.js": "^3.9.1",
     "chartjs-plugin-dragdata": "^2.2.4",
+    "chartjs-plugin-zoom": "^2.0.0",
     "eslint": "8.27.0",
     "eslint-config-next": "13.0.3",
     "next": "^12.3.2-canary.32",

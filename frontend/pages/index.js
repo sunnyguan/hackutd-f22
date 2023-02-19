@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Dashboard from "./Dashboard";
 import LandingPage from "./LandingPage";
 import { getCharts } from "./ChartSelector";
+import Calculator from "./Calculator";
 
 export const headers = [
   ["Dashboard", "#0aadff"],
@@ -21,6 +22,8 @@ function Switch({ tab }) {
     return <Dashboard />;
   } else if (tab === "Budget") {
     return options[tab];
+  } else if (tab === "Calculator") {
+    return <Calculator />;
   }
 }
 
@@ -64,7 +67,7 @@ export default function Home() {
         color: "#ffffff",
         fontSize: "25px",
       }}
-      className={"h-full"}
+      className={"h-full flex flex-col"}
     >
       {info ? (
         <>
@@ -73,8 +76,9 @@ export default function Home() {
             <TabItem name={"Portfolio"} />
             <TabItem name={"Salary"} />
             <TabItem name={"Budget"} />
+            <TabItem name={"Calculator"} />
           </div>
-          <div className={"mx-9 h-full"}>
+          <div className={"mx-9 flex-1 flex flex-col"}>
             <h1
               className={
                 "text-5xl text-center mx-10 font-bold drop-shadow-[5px_5px_10px_#66A2FC]"

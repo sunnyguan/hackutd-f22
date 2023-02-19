@@ -3,9 +3,18 @@ import { useEffect, useRef, useState } from "react";
 import "chartjs-plugin-dragdata";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import { unemployment } from "../years.json";
+import data from "../years.js";
 import { DEFAULTS, POINT_PROPS } from "./Defaults";
 import { aggregate_info, getChartData } from "../utils/calculations_utils";
+
+import { Chart as Chartt } from "chart.js";
+
+if (typeof window !== "undefined") {
+  (async () => {
+    const { default: zoomPlugin } = await import("chartjs-plugin-zoom");
+    Chartt.register(zoomPlugin);
+  })();
+}
 
 export default function InvestmentChart({ bump }) {
   const chartRef = useRef(null);
@@ -139,6 +148,20 @@ export default function InvestmentChart({ bump }) {
         },
       },
       plugins: {
+        zoom: {
+          pan: {
+            enabled: true,
+          },
+          zoom: {
+            wheel: {
+              enabled: true,
+            },
+            pinch: {
+              enabled: true,
+            },
+            mode: "xy",
+          },
+        },
         legend: {
           labels: {
             color: "white",
@@ -275,9 +298,9 @@ export default function InvestmentChart({ bump }) {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
+                  fillRule="evenodd"
                   d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
+                  clipRule="evenodd"
                 ></path>
               </svg>
               <span className="sr-only">Close modal</span>
@@ -292,7 +315,7 @@ export default function InvestmentChart({ bump }) {
                       lineTension: 0,
                       fill: true,
                       borderJoinStyle: "round",
-                      data: unemployment,
+                      data: data.unemployment,
                       borderWidth: 0.2,
                       barPercentage: 1,
                       categoryPercentage: 1,
@@ -365,6 +388,7 @@ export default function InvestmentChart({ bump }) {
           </div>
         </div>
       </div>
+
       <div className={"flex"}>
         <div className={"flex-1"}>
           <Chart
@@ -377,6 +401,16 @@ export default function InvestmentChart({ bump }) {
           />
         </div>
       </div>
+      <button
+        onClick={() => {
+          chartRef.current.resetZoom();
+        }}
+        className={
+          "self-center m-2 px-4 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 active:bg-blue-900"
+        }
+      >
+        Reset Zoom
+      </button>
     </>
   );
 }
